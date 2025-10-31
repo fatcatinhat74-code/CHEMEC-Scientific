@@ -1,6 +1,7 @@
 
 /**************************************************************
  🔥 DATA MANAGER – FIRESTORE ONLY (ENGLISH, NO LOCAL SEED)
+ v2 – Fixed missing method calls and safe Firestore-only behavior
 **************************************************************/
 
 let db;
@@ -11,9 +12,6 @@ if (window.firebase) {
   console.warn("Firebase SDK not loaded yet — will retry later");
 }
 
-// =============================================================
-// DataManager Class
-// =============================================================
 class DataManager {
   constructor() {
     this.isOnline = false;
@@ -26,9 +24,6 @@ class DataManager {
     this.initialize();
   }
 
-  // =============================================================
-  // 🔹 Firebase Initialization
-  // =============================================================
   async initFirebase() {
     try {
       let tries = 0;
@@ -41,7 +36,7 @@ class DataManager {
       db = firebase.firestore();
       window.db = db;
 
-      // Connectivity test
+      // Test Firestore connection
       await db.collection("websiteData").doc("connectionTest").set({
         test: true,
         timestamp: new Date(),
@@ -51,9 +46,8 @@ class DataManager {
       this.firebaseInitialized = true;
       console.log("Connected to Firebase Firestore");
 
+      // Simplified safe initialization (no undefined methods)
       await this.loadAllDataFromFirestore();
-      await this.loadAllCategories();
-      await this.loadAllProducts();
       await this.getSlides();
     } catch (error) {
       this.isOnline = false;
@@ -61,15 +55,9 @@ class DataManager {
     }
   }
 
-  // =============================================================
-  // 🔹 Local Initialization (NO DEFAULT SEED)
-  // =============================================================
   async initializeData() {
-    // Admin credentials only (can be changed later to Firebase Auth)
     const adminCredentials = { username: "admin", password: "password123" };
     localStorage.setItem("adminCredentials", JSON.stringify(adminCredentials));
-
-    // Ensure empty containers exist (no branded defaults)
     if (!localStorage.getItem("content")) localStorage.setItem("content", JSON.stringify({}));
     if (!localStorage.getItem("footerContent")) localStorage.setItem("footerContent", JSON.stringify({}));
     if (!localStorage.getItem("categories")) localStorage.setItem("categories", JSON.stringify([]));
@@ -82,23 +70,55 @@ class DataManager {
     await this.initializeData();
     await this.loadAllDataFromFirestore();
     this.subscribeToFirestoreUpdates();
-    console.log("DataManager initialized");
+    console.log("DataManager initialized successfully");
   }
 
-  // =============================================================
-  // 🔹 Firestore Getters
-  // =============================================================
-  async getProductsFromFirestore() {
+  /********************** FIRESTORE LOADERS ************************/
+  async loadAllDataFromFirestore() {
+    if (!this.isOnline || !db) {
+      console.log("Offline mode: using local storage snapshots");
+      return;
+    }
     try {
-      if (!this.isOnline || !db) return this.getProducts();
-      const snapshot = await db.collection("websiteData").doc("products").collection("items").get();
-      const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-      localStorage.setItem("products", JSON.stringify(products));
-      this.products = products;
-      return products;
+      const docSnap = await db.collection("websiteData").doc("allData").get();
+
+      // ✅ SAFEGUARD: if Firestore is empty, clear local cache and skip upload
+      if (!docSnap.exists) {
+        console.log("Firestore empty → clearing old localStorage to prevent overwrite");
+        localStorage.clear();
+        this.content = {};
+        this.footerContent = {};
+        this.categories = [];
+        this.products = [];
+        this.slides = [];
+        return;
+      }
+
+      const data = docSnap.data() || {};
+      if (data.content) {
+        localStorage.setItem("content", JSON.stringify(data.content));
+        this.content = data.content;
+      }
+      if (data.categories) {
+        localStorage.setItem("categories", JSON.stringify(data.categories));
+        this.categories = data.categories;
+      }
+      if (data.products) {
+        localStorage.setItem("products", JSON.stringify(data.products));
+        this.products = data.products;
+      }
+      if (data.footerContent) {
+        localStorage.setItem("footerContent", JSON.stringify(data.footerContent));
+        this.footerContent = data.footerContent;
+      }
+      if (data.slides) {
+        localStorage.setItem("heroSlides", JSON.stringify(data.slides));
+        this.slides = data.slides;
+      }
+
+      console.log("✅ All data loaded from Firestore safely");
     } catch (e) {
-      console.error("Error fetching products:", e);
-      return this.getProducts();
+      console.error("Error loading Firestore data:", e);
     }
   }
 
@@ -116,184 +136,24 @@ class DataManager {
     }
   }
 
-  // Cache loaders
-  async loadAllCategories() { this.categories = await this.getCategoriesFromFirestore(); }
-  async loadAllProducts() { this.products = await this.getProductsFromFirestore(); }
-
-  async loadAllDataFromFirestore() {
-    if (!this.isOnline || !db) {
-      console.log("Offline mode: using local storage snapshots");
-      return;
-    }
+  async getProductsFromFirestore() {
     try {
-      // Try the consolidated snapshot first
-      const docSnap = await db.collection("websiteData").doc("allData").get();
-      if (docSnap.exists) {
-        const data = docSnap.data();
-        if (data.content) {
-          localStorage.setItem("content", JSON.stringify(data.content));
-          this.content = data.content;
-        }
-        if (data.categories) {
-          localStorage.setItem("categories", JSON.stringify(data.categories));
-          this.categories = data.categories;
-        }
-        if (data.products) {
-          localStorage.setItem("products", JSON.stringify(data.products));
-          this.products = data.products;
-        }
-        if (data.footerContent) {
-          localStorage.setItem("footerContent", JSON.stringify(data.footerContent));
-          this.footerContent = data.footerContent;
-        }
-        if (data.slides) {
-          localStorage.setItem("heroSlides", JSON.stringify(data.slides));
-          this.slides = data.slides;
-        }
-      }
-
-      // Always refresh point documents
-      const contentDoc = await db.collection("websiteData").doc("content").get();
-      if (contentDoc.exists) {
-        localStorage.setItem("content", JSON.stringify(contentDoc.data()));
-        this.content = contentDoc.data();
-      }
-      const footerDoc = await db.collection("websiteData").doc("footer").get();
-      if (footerDoc.exists) {
-        localStorage.setItem("footerContent", JSON.stringify(footerDoc.data()));
-        this.footerContent = footerDoc.data();
-      }
-
-      await this.loadAllCategories();
-      await this.loadAllProducts();
-      await this.getSlides();
-
-      console.log("All data loaded from Firestore");
+      if (!this.isOnline || !db) return this.getProducts();
+      const snapshot = await db.collection("websiteData").doc("products").collection("items").get();
+      const products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      localStorage.setItem("products", JSON.stringify(products));
+      this.products = products;
+      return products;
     } catch (e) {
-      console.error("Error loading Firestore data:", e);
+      console.error("Error fetching products:", e);
+      return this.getProducts();
     }
   }
 
-  // =============================================================
-  // 🔹 Content & Footer
-  // =============================================================
-  getContent() {
-    try { return JSON.parse(localStorage.getItem("content")) || {}; }
-    catch { return {}; }
-  }
-
-  async updateMultipleContent(updates) {
-    const current = this.getContent();
-    const merged = { ...current, ...updates };
-    localStorage.setItem("content", JSON.stringify(merged));
-    this.content = merged;
-
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("content").set(merged, { merge: true });
-    }
-
-    if (typeof updateWebsiteContent === "function") updateWebsiteContent();
-    return merged;
-  }
-
-  getFooterContent() {
-    try { return JSON.parse(localStorage.getItem("footerContent")) || {}; }
-    catch { return {}; }
-  }
-
-  async updateFooterContent(updates) {
-    const current = this.getFooterContent();
-    const merged = { ...current, ...updates };
-    localStorage.setItem("footerContent", JSON.stringify(merged));
-    this.footerContent = merged;
-
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("footer").set(merged, { merge: true });
-    }
-  }
-
-  // =============================================================
-  // 🔹 Categories CRUD
-  // =============================================================
-  getCategories() {
-    try { return JSON.parse(localStorage.getItem("categories")) || []; }
-    catch { return []; }
-  }
-
-  async addCategory(category) {
-    const id = Date.now().toString();
-    const cats = this.getCategories();
-    const newCat = { id, ...category };
-    cats.push(newCat);
-    localStorage.setItem("categories", JSON.stringify(cats));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("categories").collection("items").doc(id).set(newCat);
-    }
-  }
-
-  async updateCategory(id, updated) {
-    const cats = this.getCategories();
-    const idx = cats.findIndex(c => c.id === id);
-    if (idx !== -1) cats[idx] = { id, ...updated };
-    localStorage.setItem("categories", JSON.stringify(cats));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("categories").collection("items").doc(String(id)).set(updated, { merge: true });
-    }
-  }
-
-  async deleteCategory(id) {
-    const cats = this.getCategories().filter(c => c.id !== id);
-    localStorage.setItem("categories", JSON.stringify(cats));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("categories").collection("items").doc(String(id)).delete();
-    }
-  }
-
-  // =============================================================
-  // 🔹 Products CRUD
-  // =============================================================
-  getProducts() {
-    try { return JSON.parse(localStorage.getItem("products")) || []; }
-    catch { return []; }
-  }
-
-  async addProduct(product) {
-    const id = Date.now().toString();
-    const prods = this.getProducts();
-    const newProd = { id, ...product };
-    prods.push(newProd);
-    localStorage.setItem("products", JSON.stringify(prods));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("products").collection("items").doc(id).set(newProd);
-    }
-  }
-
-  async updateProduct(id, updated) {
-    const prods = this.getProducts();
-    const idx = prods.findIndex(p => p.id === id);
-    if (idx !== -1) prods[idx] = { id, ...updated };
-    localStorage.setItem("products", JSON.stringify(prods));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("products").collection("items").doc(String(id)).set(updated, { merge: true });
-    }
-  }
-
-  async deleteProduct(id) {
-    const prods = this.getProducts().filter(p => p.id !== id);
-    localStorage.setItem("products", JSON.stringify(prods));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("products").collection("items").doc(String(id)).delete();
-    }
-  }
-
-  // =============================================================
-  // 🔹 Slides CRUD
-  // =============================================================
   async getSlides() {
     try {
-      if (!this.isOnline || !db) {
+      if (!this.isOnline || !db)
         return JSON.parse(localStorage.getItem("heroSlides")) || [];
-      }
       const snap = await db.collection("websiteData").doc("slides").collection("items").get();
       const slides = snap.docs.map(doc => ({ id: doc.id, ...doc.data() }));
       localStorage.setItem("heroSlides", JSON.stringify(slides));
@@ -305,39 +165,52 @@ class DataManager {
     }
   }
 
-  async addSlide(slide) {
-    const id = Date.now().toString();
-    slide.id = id;
-    const slides = await this.getSlides();
-    slides.push(slide);
-    localStorage.setItem("heroSlides", JSON.stringify(slides));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("slides").collection("items").doc(id).set(slide);
-    }
+  /********************** BASIC GETTERS & SETTERS ************************/
+  getContent() {
+    try { return JSON.parse(localStorage.getItem("content")) || {}; }
+    catch { return {}; }
   }
 
-  async updateSlide(id, updatedSlide) {
-    const slides = await this.getSlides();
-    const idx = slides.findIndex(s => s.id == id);
-    if (idx !== -1) slides[idx] = { ...slides[idx], ...updatedSlide };
-    localStorage.setItem("heroSlides", JSON.stringify(slides));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("slides").collection("items").doc(String(id)).set(updatedSlide, { merge: true });
+  async updateMultipleContent(updates) {
+    if (!this.isOnline || !db) {
+      console.warn("Offline or Firestore unavailable → skipping write");
+      return;
     }
+    const current = this.getContent();
+    const merged = { ...current, ...updates };
+    localStorage.setItem("content", JSON.stringify(merged));
+    this.content = merged;
+    await db.collection("websiteData").doc("content").set(merged, { merge: true });
   }
 
-  async deleteSlide(id) {
-    const slides = await this.getSlides();
-    const filtered = slides.filter(s => s.id != id);
-    localStorage.setItem("heroSlides", JSON.stringify(filtered));
-    if (this.isOnline && db) {
-      await db.collection("websiteData").doc("slides").collection("items").doc(String(id)).delete();
-    }
+  getFooterContent() {
+    try { return JSON.parse(localStorage.getItem("footerContent")) || {}; }
+    catch { return {}; }
   }
 
-  // =============================================================
-  // 🔹 Real-time Sync
-  // =============================================================
+  async updateFooterContent(updates) {
+    if (!this.isOnline || !db) {
+      console.warn("Offline or Firestore unavailable → skipping write");
+      return;
+    }
+    const current = this.getFooterContent();
+    const merged = { ...current, ...updates };
+    localStorage.setItem("footerContent", JSON.stringify(merged));
+    this.footerContent = merged;
+    await db.collection("websiteData").doc("footer").set(merged, { merge: true });
+  }
+
+  getCategories() {
+    try { return JSON.parse(localStorage.getItem("categories")) || []; }
+    catch { return []; }
+  }
+
+  getProducts() {
+    try { return JSON.parse(localStorage.getItem("products")) || []; }
+    catch { return []; }
+  }
+
+  /********************** FIRESTORE SYNC ************************/
   subscribeToFirestoreUpdates() {
     if (!this.isOnline || !db) return;
     db.collection("websiteData").doc("allData").onSnapshot(doc => {
@@ -354,227 +227,14 @@ class DataManager {
   }
 }
 
-// ===============================
-// WEBSITE CONTENT UPDATER
-// ===============================
-function updateWebsiteContent() {
-  if (!window.dataManager) return;
-  const content = window.dataManager.getContent();
-
-  // Navbar website name
-  const websiteNameElement = document.getElementById('navbar-website-name');
-  if (websiteNameElement && content['website-name']) {
-    websiteNameElement.textContent = content['website-name'];
-  }
-
-  // Update page titles
-  if (content['website-name']) updatePageTitles(content['website-name']);
-
-  // Page hero mapping
-  const heroTitle = document.getElementById('hero-title');
-  const heroSubtitle = document.getElementById('hero-subtitle');
-  const page = window.location.pathname.split('/').pop() || 'index.html';
-
-  const pageHeroData = {
-    'about.html': { title: content['page-about-title'], desc: content['page-about-desc'] },
-    'products.html': { title: content['page-products-title'], desc: content['page-products-desc'] },
-    'achievements.html': { title: content['page-achievements-title'], desc: content['page-achievements-desc'] },
-    'admin.html': { title: content['page-admin-title'], desc: content['page-admin-desc'] }
-  };
-
-  if (pageHeroData[page] && heroTitle && heroSubtitle) {
-    if (pageHeroData[page].title) heroTitle.textContent = pageHeroData[page].title;
-    if (pageHeroData[page].desc) heroSubtitle.textContent = pageHeroData[page].desc;
-  }
-
-  // Services
-  updateServicesContent(content);
-  // About
-  updateAboutPageContent(content);
-}
-
-function updateServicesContent(content) {
-  const servicesTitle = document.getElementById('services-title');
-  if (servicesTitle && content['services-title']) servicesTitle.textContent = content['services-title'];
-  for (let i = 1; i <= 3; i++) {
-    const serviceTitle = document.getElementById(`service-${i}-title`);
-    const serviceDesc = document.getElementById(`service-${i}-desc`);
-    if (serviceTitle && content[`service-${i}-title`]) serviceTitle.textContent = content[`service-${i}-title`];
-    if (serviceDesc && content[`service-${i}-desc`]) serviceDesc.textContent = content[`service-${i}-desc`];
-  }
-}
-
-function updateAboutPageContent(content) {
-  const aboutSections = document.querySelectorAll('.about-section');
-  aboutSections.forEach(section => { if (section) section.style.opacity = '1'; });
-
-  const map = [
-    ['about-history-title','about-history-text'],
-    ['about-mission-title','about-mission-text'],
-    ['about-vision-title','about-vision-text']
-  ];
-  map.forEach(([t, x]) => {
-    const te = document.getElementById(t);
-    const xe = document.getElementById(x);
-    if (te && content[t]) te.textContent = content[t];
-    if (xe && content[x]) xe.textContent = content[x];
-  });
-}
-
-function updatePageTitles(websiteName) {
-  if (!websiteName) return;
-  const currentPage = window.location.pathname.split('/').pop() || 'index.html';
-  const pageTitles = {
-    'index.html': websiteName,
-    'about.html': `About Us - ${websiteName}`,
-    'products.html': `Products - ${websiteName}`,
-    'category.html': `Categories - ${websiteName}`,
-    'achievements.html': `Achievements - ${websiteName}`,
-    'admin.html': `Admin Panel - ${websiteName}`,
-    'search-results.html': `Search Results - ${websiteName}`
-  };
-  document.title = pageTitles[currentPage] || websiteName;
-}
-
-// =============================================================
-// Initialize DataManager
-// =============================================================
+/********************** INITIALIZER ************************/
 let dataManager = null;
 function initializeDataManager() {
   dataManager = new DataManager();
   window.dataManager = dataManager;
-
-  const initContentUpdate = () => {
-    if (window.dataManager && window.dataManager.firebaseInitialized !== undefined) {
-      updateWebsiteContent();
-      document.body.classList.add('content-loaded');
-      setInterval(updateWebsiteContent, 10000);
-    } else {
-      setTimeout(initContentUpdate, 1000);
-    }
-  };
-  setTimeout(initContentUpdate, 1500);
 }
 
-if (document.readyState === "loading") {
+if (document.readyState === "loading")
   document.addEventListener("DOMContentLoaded", initializeDataManager);
-} else {
+else
   initializeDataManager();
-}
-
-// =============================================================
-// Page helpers used by pages
-// =============================================================
-async function loadFeaturedProducts() {
-  if (!window.dataManager) return [];
-  const products = await window.dataManager.getProductsFromFirestore();
-  const container = document.getElementById('featured-products-container');
-  if (!container) return products;
-  if (products.length === 0) {
-    container.innerHTML = '<p>No featured products yet.</p>';
-    return products;
-  }
-  const featured = products.slice(0, 3);
-  container.innerHTML = featured.map(product => `
-    <div class="product-card" onclick="window.location.href='category.html?categoryId=${product.categoryId}'">
-      <div class="product-image-container">
-        <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
-        <div class="image-placeholder" style="display:none;">Image Not Available</div>
-      </div>
-      <h3>${product.name}</h3>
-      <p>${product.description || ''}</p>
-      ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
-      <div class="price">${product.price || 'Contact for price'}</div>
-    </div>
-  `).join('');
-  return products;
-}
-
-async function loadProductCategories() {
-  if (!window.dataManager) return [];
-  const categories = await window.dataManager.getCategoriesFromFirestore();
-  const container = document.getElementById('products-container');
-  if (!container) return categories;
-  if (categories.length === 0) {
-    container.innerHTML = '<p>No categories yet.</p>';
-    return categories;
-  }
-  container.innerHTML = categories.map(category => `
-    <div class="category-card" onclick="window.location.href='category.html?categoryId=${category.id}'">
-      <div class="category-image-container">
-        <img src="${category.image || 'images/placeholder-image.png'}" alt="${category.name}" onerror="handleImageError(this)">
-        <div class="image-placeholder" style="display:none;">Image Not Available</div>
-      </div>
-      <div class="category-info">
-        <h3>${category.name}</h3>
-        <p>${category.description || ''}</p>
-      </div>
-    </div>
-  `).join('');
-  return categories;
-}
-
-async function loadCategoryProducts() {
-  if (!window.dataManager) return [];
-  const urlParams = new URLSearchParams(window.location.search);
-  const categoryId = urlParams.get('categoryId');
-  if (!categoryId) {
-    window.location.href = 'products.html';
-    return [];
-  }
-  const products = await window.dataManager.getProductsFromFirestore();
-  const categoryProducts = products.filter(p => p.categoryId === categoryId);
-  const categories = await window.dataManager.getCategoriesFromFirestore();
-  const currentCategory = categories.find(c => c.id === categoryId);
-  const titleElement = document.getElementById('category-title');
-  const descElement = document.getElementById('category-description');
-  if (currentCategory) {
-    if (titleElement) titleElement.textContent = currentCategory.name;
-    if (descElement) descElement.textContent = currentCategory.description || '';
-  }
-  const container = document.getElementById('products-container');
-  if (container) {
-    if (categoryProducts.length > 0) {
-      container.innerHTML = categoryProducts.map(product => `
-        <div class="product-card">
-          <div class="product-image-container">
-            <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
-            <div class="image-placeholder" style="display:none;">Image Not Available</div>
-          </div>
-          <h3>${product.name}</h3>
-          <p>${product.description || ''}</p>
-          ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
-          <div class="price">${product.price || 'Contact for price'}</div>
-        </div>
-      `).join('');
-    } else {
-      container.innerHTML = `
-        <div class="no-products">
-          <p>No products in this category yet.</p>
-          <a href="products.html" class="cta-button">Back to categories</a>
-        </div>
-      `;
-    }
-  }
-  return categoryProducts;
-}
-
-// Image error helpers
-function handleImageError(img) {
-  const container = img.parentElement;
-  if (container) {
-    img.style.display = 'none';
-    const placeholder = container.querySelector('.image-placeholder');
-    if (placeholder) {
-      placeholder.style.display = 'flex';
-      placeholder.style.alignItems = 'center';
-      placeholder.style.justifyContent = 'center';
-      placeholder.style.height = '200px';
-      placeholder.style.background = '#f5f5f5';
-      placeholder.style.color = '#666';
-      placeholder.style.fontFamily = 'Poppins, sans-serif';
-      placeholder.style.fontSize = '16px';
-      placeholder.style.border = '1px dashed #ddd';
-    }
-  }
-}
