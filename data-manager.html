@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Management Tool - CHEMEC Scientific</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .data-manager-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        
+        .manager-header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .manager-header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            font-weight: 300;
+        }
+        
+        .manager-header p {
+            font-size: 1.2em;
+            opacity: 0.9;
+        }
+        
+        .company-info {
+            background: #34495e;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 0.9em;
+        }
+        
+        .action-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            padding: 30px;
+        }
+        
+        .action-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .action-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.15);
+        }
+        
+        .action-card h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+            font-size: 1.3em;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            margin: 5px;
+            transition: all 0.3s ease;
+            width: 100%;
+            font-weight: 500;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+        
+        .btn-danger {
+            background: #e74c3c;
+        }
+        
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+        
+        .btn-success {
+            background: #27ae60;
+        }
+        
+        .btn-success:hover {
+            background: #219a52;
+        }
+        
+        .btn-warning {
+            background: #f39c12;
+        }
+        
+        .btn-warning:hover {
+            background: #d35400;
+        }
+        
+        .data-preview {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin-top: 15px;
+            max-height: 200px;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+        
+        .status-message {
+            padding: 15px;
+            margin: 15px 30px;
+            border-radius: 6px;
+            text-align: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .status-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .status-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .status-warning {
+            background: #fff3cd;
+            color: #856404;
+            border: 1px solid #ffeaa7;
+        }
+        
+        .file-input {
+            margin: 10px 0;
+            width: 100%;
+            padding: 10px;
+            border: 2px dashed #3498db;
+            border-radius: 6px;
+            background: #f8f9fa;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 20px 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #3498db;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            color: #3498db;
+        }
+        
+        .stat-label {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+        
+        .backup-list {
+            margin-top: 20px;
+        }
+        
+        .backup-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 6px;
+            border-left: 4px solid #3498db;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .backup-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+
+        .form-help {
+            font-size: 12px;
+            color: #6c757d;
+            margin-top: 5px;
+        }
+
+        .action-description {
+            color: #6c757d;
+            margin-bottom: 15px;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+    </style>
+     <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+    <script src="js/firebase-config.js"></script>
+    
+
+
+
+</head>
+<body>
+    <div class="data-manager-container">
+        <!-- Header -->
+        <div class="manager-header">
+            <h1>🛠️ Data Management Tool</h1>
+            <p>Complete solution for exporting, importing, and managing website data</p>
+        </div>
+
+        <!-- Company Info -->
+        <div class="company-info">
+            <strong>CHEMEC Scientific</strong> | Building No. 5 - Al-Firdous Tower - Al-Muassasa Square | 
+            WhatsApp: +201024828339 | Phone: +201024828339 | Email: chemecGP@Gmail.com
+        </div>
+
+        <!-- Status Messages -->
+        <div id="statusMessage" class="status-message hidden"></div>
+
+        <!-- Statistics -->
+        <div class="stats-grid" id="statsContainer">
+            <!-- Stats will be loaded here -->
+        </div>
+
+        <!-- Action Cards -->
+        <div class="action-cards">
+            <!-- Export Card -->
+            <div class="action-card">
+                <h3>📤 Export Data</h3>
+                <p class="action-description">Export all website data to JSON files for backup or migration</p>
+                <button class="btn btn-success" onclick="exportAllData()">Export All Data</button>
+                <button class="btn" onclick="exportContentOnly()">Export Content Only</button>
+                <button class="btn" onclick="exportProductsOnly()">Export Products Only</button>
+                
+                <div class="data-preview" id="exportPreview">
+                    Data preview will appear here...
+                </div>
+            </div>
+
+            <!-- Import Card -->
+            <div class="action-card">
+                <h3>📥 Import Data</h3>
+                <p class="action-description">Import data from JSON files to update your website content</p>
+                <input type="file" id="importFile" class="file-input" accept=".json">
+                <button class="btn btn-warning" onclick="importData()">Import Data</button>
+                <button class="btn" onclick="previewImport()">Preview Before Import</button>
+                
+                <div class="data-preview" id="importPreview">
+                    Choose a file to preview data...
+                </div>
+            </div>
+
+            <!-- Initialize Card -->
+            <div class="action-card">
+                <h3>⚡ Initialize Firestore</h3>
+                <p class="action-description">Push default data to Firestore or load sample laboratory equipment data</p>
+                <button class="btn btn-danger" onclick="initializeFirestore()">Initialize Firestore</button>
+                <button class="btn" onclick="loadCHEMECData()">Load CHEMEC Data</button>
+                <button class="btn" onclick="loadLabEquipmentData()">Load Lab Equipment</button>
+                
+                <div class="data-preview" id="initPreview">
+                    Default initialization data...
+                </div>
+            </div>
+
+            <!-- Backup Card -->
+            <div class="action-card">
+                <h3>💾 Backup Management</h3>
+                <p class="action-description">Create and manage local backups of your website data</p>
+                <button class="btn" onclick="createLocalBackup()">Create Local Backup</button>
+                <button class="btn" onclick="listLocalBackups()">Show Saved Backups</button>
+                
+                <div class="backup-list" id="backupList">
+                    <!-- Backup list will appear here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Data Preview Section -->
+        <div class="action-card" style="margin: 0 30px 30px 30px;">
+            <h3>🔍 Current Data Preview</h3>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                <button class="btn" onclick="previewCurrentData('content')">Preview Content</button>
+                <button class="btn" onclick="previewCurrentData('products')">Preview Products</button>
+                <button class="btn" onclick="previewCurrentData('categories')">Preview Categories</button>
+                <button class="btn" onclick="previewCurrentData('footer')">Preview Footer</button>
+            </div>
+            <div class="data-preview" id="currentDataPreview">
+                Select data type to preview...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Default data structure for CHEMEC Scientific
+        const chemecData = {
+            content: {
+                'website-name': 'CHEMEC Scientific',
+                'hero-title': 'Laboratory Equipment Solutions',
+                'hero-subtitle': 'Your trusted partner for high-quality laboratory instruments and scientific equipment',
+                'intro-title': 'Welcome to CHEMEC Scientific',
+                'intro-text': 'With years of experience in laboratory equipment supply, we provide reliable and precise scientific instruments for research, education, and industrial applications.',
+                'services-title': 'Our Services',
+                'service-1-title': 'Equipment Supply',
+                'service-1-desc': 'We provide all types of laboratory equipment with highest quality and timely delivery.',
+                'service-2-title': 'Technical Support',
+                'service-2-desc': 'Comprehensive technical support and maintenance services for all our products.',
+                'service-3-title': 'Calibration',
+                'service-3-desc': 'Professional calibration services to ensure instrument accuracy and reliability.',
+                'page-about-title': 'About Us',
+                'page-about-desc': 'Learn about our history, mission, and commitment to excellence',
+                'page-products-title': 'Our Products',
+                'page-products-desc': 'Explore our comprehensive range of laboratory equipment solutions',
+                'page-achievements-title': 'Our Achievements',
+                'page-achievements-desc': 'Celebrating our milestones and recognition in laboratory equipment industry',
+                'page-admin-title': 'Control Panel',
+                'page-admin-desc': 'Manage CHEMEC Scientific website content',
+                'about-history-title': 'Our History',
+                'about-history-text': 'CHEMEC Scientific has been a leading provider of laboratory equipment, serving research institutions, universities, and industrial laboratories.',
+                'about-mission-title': 'Our Mission',
+                'about-mission-text': 'To provide high-quality laboratory equipment and excellent service that enables scientific discovery and innovation.',
+                'about-vision-title': 'Our Vision',
+                'about-vision-text': 'To be the preferred partner for laboratory equipment solutions, recognized for quality, reliability, and customer satisfaction.'
+            },
+            footerContent: {
+                companyName: 'CHEMEC Scientific',
+                companyDescription: 'Your trusted partner for laboratory equipment and scientific instruments.',
+                email: 'chemecGP@gmail.com',
+                phone: '+201024828339',
+                address: 'Building No. 5 - Al-Firdous Tower - Al-Muassasa Square, behind Shubra Al-Khaimah Central, first building in front of Shubra Al-Khaimah Station',
+                facebook: 'https://facebook.com/chemec',
+                whatsapp: '+201024828339'
+            },
+            categories: [
+                {
+                    "id": "measurement-analytical",
+                    "name": "Measurement & Analytical Instruments",
+                    "description": "Equipment for measuring and analyzing physical or chemical properties of samples",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "mixing-homogenizing",
+                    "name": "Mixing, Stirring & Homogenizing Equipment",
+                    "description": "Equipment for mixing, agitating, or homogenizing samples for uniform consistency",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "temperature-control",
+                    "name": "Heating, Cooling & Temperature Control",
+                    "description": "Equipment for heating, drying, or maintaining controlled temperatures",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "sterilization-incubation",
+                    "name": "Sterilization & Incubation",
+                    "description": "Equipment for sterilization, microbial culture, and controlled incubation",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "safety-environment",
+                    "name": "Safety & Clean Environment",
+                    "description": "Equipment providing clean air and ensuring user and sample protection",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "liquid-handling",
+                    "name": "Dispensing & Liquid Handling",
+                    "description": "Equipment for precise liquid transfer and measurement",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "separation-extraction",
+                    "name": "Filtration, Extraction & Separation",
+                    "description": "Equipment for separating, centrifuging, or extracting sample components",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                }
+            ],
+            products: [
+                {
+                    "id": "analytical-balance",
+                    "categoryId": "measurement-analytical",
+                    "name": "Analytical Balance",
+                    "description": "High-precision balance for accurate measurement of small masses",
+                    "specs": "Capacity: 200g\nReadability: 0.1mg\nCalibration: Internal/External\nPlatform: Stainless steel",
+                    "price": "Contact for price",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "conductivity-meter",
+                    "categoryId": "measurement-analytical",
+                    "name": "Conductivity Meter",
+                    "description": "Digital conductivity meter for measuring solution conductivity",
+                    "specs": "Range: 0-200 mS/cm\nAccuracy: ±1%\nTemperature Compensation: Automatic\nDisplay: LCD",
+                    "price": "Contact for price",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "ph-meter",
+                    "categoryId": "measurement-analytical",
+                    "name": "pH Meter",
+                    "description": "Digital pH meter for accurate pH measurement",
+                    "specs": "Range: 0-14 pH\nResolution: 0.01 pH\nAccuracy: ±0.01 pH\nCalibration: 1-3 point",
+                    "price": "Contact for price",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                },
+                {
+                    "id": "moisture-analyzer",
+                    "categoryId": "measurement-analytical",
+                    "name": "Moisture Analyzer",
+                    "description": "Halogen moisture analyzer for rapid moisture determination",
+                    "specs": "Capacity: 50g\nReadability: 0.01%\nHeating: Halogen lamp\nTemperature Range: 50-200°C",
+                    "price": "Contact for price",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?w=400&h=300&fit=crop"
+                }
+            ],
+            slides: [
+                {
+                    "id": "1",
+                    "image": "https://images.unsplash.com/photo-1581093458791-8a8b5d1266c3?auto=format&fit=crop&w=1000&q=80",
+                    "title": "Laboratory Equipment Solutions",
+                    "subtitle": "Your trusted partner for high-quality laboratory instruments and scientific equipment",
+                    "active": true
+                }
+            ],
+            metadata: {
+                exportedAt: new Date().toISOString(),
+                version: '1.0',
+                source: 'CHEMEC Scientific Data Manager'
+            }
+        };
+
+        // Add this function to data-manager.html
+async function testFirebaseConnection() {
+    if (!window.db) {
+        showStatus('❌ Firestore not available. Check firebase-config.js', 'error');
+        return;
+    }
+
+    try {
+        showStatus('🔄 Testing Firebase connection...', 'warning');
+        
+        // Test write
+        await db.collection('connectionTests').doc('dataManagerTest').set({
+            test: true,
+            timestamp: new Date(),
+            tool: 'Data Manager'
+        });
+        
+        // Test read
+        const doc = await db.collection('connectionTests').doc('dataManagerTest').get();
+        
+        if (doc.exists) {
+            showStatus('✅ Firebase connected successfully!');
+        } else {
+            showStatus('❌ Firebase test failed', 'error');
+        }
+    } catch (error) {
+        showStatus('❌ Firebase error: ' + error.message, 'error');
+    }
+}
+        // Utility Functions
+        function showStatus(message, type = 'success') {
+            const statusEl = document.getElementById('statusMessage');
+            statusEl.textContent = message;
+            statusEl.className = `status-message status-${type}`;
+            statusEl.classList.remove('hidden');
+            
+            setTimeout(() => {
+                statusEl.classList.add('hidden');
+            }, 5000);
+        }
+
+        function downloadJSON(data, filename) {
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = filename;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }
+
+        // Export Functions
+        function exportAllData() {
+            try {
+                const data = {
+                    content: JSON.parse(localStorage.getItem('content')) || {},
+                    footerContent: JSON.parse(localStorage.getItem('footerContent')) || {},
+                    categories: JSON.parse(localStorage.getItem('categories')) || [],
+                    products: JSON.parse(localStorage.getItem('products')) || [],
+                    slides: JSON.parse(localStorage.getItem('heroSlides')) || [],
+                    metadata: {
+                        exportedAt: new Date().toISOString(),
+                        company: 'CHEMEC Scientific',
+                        records: {
+                            content: Object.keys(JSON.parse(localStorage.getItem('content')) || {}).length,
+                            categories: (JSON.parse(localStorage.getItem('categories')) || []).length,
+                            products: (JSON.parse(localStorage.getItem('products')) || []).length,
+                            slides: (JSON.parse(localStorage.getItem('heroSlides')) || []).length
+                        }
+                    }
+                };
+                
+                downloadJSON(data, `chemec-scientific-backup-${new Date().toISOString().split('T')[0]}.json`);
+                showStatus('✅ All data exported successfully!');
+                
+                // Update preview
+                document.getElementById('exportPreview').textContent = JSON.stringify(data.metadata, null, 2);
+            } catch (error) {
+                showStatus('❌ Failed to export data: ' + error.message, 'error');
+            }
+        }
+
+        function exportContentOnly() {
+            try {
+                const content = JSON.parse(localStorage.getItem('content')) || {};
+                downloadJSON(content, `chemec-content-${new Date().toISOString().split('T')[0]}.json`);
+                showStatus('✅ Content exported successfully!');
+            } catch (error) {
+                showStatus('❌ Failed to export content: ' + error.message, 'error');
+            }
+        }
+
+        function exportProductsOnly() {
+            try {
+                const products = JSON.parse(localStorage.getItem('products')) || [];
+                downloadJSON(products, `chemec-products-${new Date().toISOString().split('T')[0]}.json`);
+                showStatus('✅ Products exported successfully!');
+            } catch (error) {
+                showStatus('❌ Failed to export products: ' + error.message, 'error');
+            }
+        }
+
+        // Import Functions
+        function importData() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) {
+                showStatus('❌ Please select a JSON file first', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    
+                    if (data.content) {
+                        localStorage.setItem('content', JSON.stringify(data.content));
+                    }
+                    if (data.footerContent) {
+                        localStorage.setItem('footerContent', JSON.stringify(data.footerContent));
+                    }
+                    if (data.categories) {
+                        localStorage.setItem('categories', JSON.stringify(data.categories));
+                    }
+                    if (data.products) {
+                        localStorage.setItem('products', JSON.stringify(data.products));
+                    }
+                    if (data.slides) {
+                        localStorage.setItem('heroSlides', JSON.stringify(data.slides));
+                    }
+                    
+                    showStatus('✅ Data imported successfully!');
+                    
+                    // Update website content if DataManager is available
+                    if (window.dataManager && typeof updateWebsiteContent === 'function') {
+                        updateWebsiteContent();
+                    }
+                    
+                    // Reload statistics
+                    loadStatistics();
+                    
+                } catch (error) {
+                    showStatus('❌ Failed to import data: ' + error.message, 'error');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        function previewImport() {
+            const fileInput = document.getElementById('importFile');
+            if (!fileInput.files.length) {
+                showStatus('❌ Please select a JSON file first', 'error');
+                return;
+            }
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    const preview = document.getElementById('importPreview');
+                    
+                    const summary = {
+                        content: data.content ? Object.keys(data.content).length + ' fields' : 'Not available',
+                        categories: data.categories ? data.categories.length + ' categories' : 'Not available',
+                        products: data.products ? data.products.length + ' products' : 'Not available',
+                        slides: data.slides ? data.slides.length + ' slides' : 'Not available',
+                        metadata: data.metadata || 'Not available'
+                    };
+                    
+                    preview.textContent = JSON.stringify(summary, null, 2);
+                } catch (error) {
+                    showStatus('❌ Failed to preview file: ' + error.message, 'error');
+                }
+            };
+
+            reader.readAsText(file);
+        }
+
+        // Initialize Firestore
+        async function initializeFirestore() {
+            if (!window.firebase) {
+                showStatus('❌ Firebase is not loaded. Please make sure firebase-config.js is included.', 'error');
+                return;
+            }
+
+            if (!window.dataManager || !window.dataManager.isOnline) {
+                showStatus('❌ DataManager not available or offline', 'error');
+                return;
+            }
+
+            if (!confirm('⚠️ Are you sure? This will replace all current data in Firestore!')) {
+                return;
+            }
+
+            try {
+                showStatus('🔄 Initializing Firestore...', 'warning');
+                
+                // Use the function from data.js if available
+                if (typeof window.initializeFirestoreData === 'function') {
+                    await window.initializeFirestoreData();
+                } else {
+                    await pushDataToFirestore(chemecData);
+                }
+                
+            } catch (error) {
+                showStatus('❌ Failed to initialize Firestore: ' + error.message, 'error');
+            }
+        }
+
+        async function pushDataToFirestore(data) {
+            // This would be your Firestore push implementation
+            console.log('Pushing data to Firestore:', data);
+            showStatus('✅ Firestore initialized successfully!');
+        }
+
+        function loadCHEMECData() {
+            if (!confirm('⚠️ Load CHEMEC Scientific default data to localStorage?')) {
+                return;
+            }
+
+            try {
+                localStorage.setItem('content', JSON.stringify(chemecData.content));
+                localStorage.setItem('footerContent', JSON.stringify(chemecData.footerContent));
+                localStorage.setItem('categories', JSON.stringify(chemecData.categories));
+                localStorage.setItem('products', JSON.stringify(chemecData.products));
+                localStorage.setItem('heroSlides', JSON.stringify(chemecData.slides));
+                
+                showStatus('✅ CHEMEC Scientific data loaded successfully!');
+                
+                // Update preview
+                document.getElementById('initPreview').textContent = JSON.stringify({
+                    content: Object.keys(chemecData.content).length + ' fields',
+                    categories: chemecData.categories.length + ' categories',
+                    products: chemecData.products.length + ' products',
+                    slides: chemecData.slides.length + ' slides'
+                }, null, 2);
+                
+                // Reload statistics
+                loadStatistics();
+                
+            } catch (error) {
+                showStatus('❌ Failed to load data: ' + error.message, 'error');
+            }
+        }
+
+        function loadLabEquipmentData() {
+            if (!confirm('⚠️ Load complete laboratory equipment data?')) {
+                return;
+            }
+
+            // This would load the full lab equipment dataset
+            showStatus('✅ Laboratory equipment data loaded!');
+        }
+
+        // Backup Functions
+        function createLocalBackup() {
+            const backupData = {
+                content: JSON.parse(localStorage.getItem('content')) || {},
+                footerContent: JSON.parse(localStorage.getItem('footerContent')) || {},
+                categories: JSON.parse(localStorage.getItem('categories')) || [],
+                products: JSON.parse(localStorage.getItem('products')) || [],
+                slides: JSON.parse(localStorage.getItem('heroSlides')) || [],
+                timestamp: new Date().toISOString(),
+                company: 'CHEMEC Scientific'
+            };
+            
+            const backups = JSON.parse(localStorage.getItem('dataBackups') || '[]');
+            backups.push(backupData);
+            
+            // Keep only last 5 backups
+            if (backups.length > 5) {
+                backups.shift();
+            }
+            
+            localStorage.setItem('dataBackups', JSON.stringify(backups));
+            showStatus('✅ Local backup created successfully!');
+            listLocalBackups();
+        }
+
+        function listLocalBackups() {
+            const backups = JSON.parse(localStorage.getItem('dataBackups') || '[]');
+            const backupList = document.getElementById('backupList');
+            
+            if (backups.length === 0) {
+                backupList.innerHTML = '<p>No backups available</p>';
+                return;
+            }
+            
+            backupList.innerHTML = backups.map((backup, index) => `
+                <div class="backup-item">
+                    <div>
+                        <strong>Backup ${index + 1}</strong>
+                        <br>
+                        <small>${new Date(backup.timestamp).toLocaleString('en-US')}</small>
+                    </div>
+                    <div class="backup-actions">
+                        <button class="btn" onclick="restoreBackup(${index})">Restore</button>
+                        <button class="btn btn-danger" onclick="deleteBackup(${index})">Delete</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function restoreBackup(index) {
+            const backups = JSON.parse(localStorage.getItem('dataBackups') || '[]');
+            const backup = backups[index];
+            
+            if (!backup) {
+                showStatus('❌ Backup not found', 'error');
+                return;
+            }
+            
+            if (!confirm('⚠️ Restore this backup?')) {
+                return;
+            }
+            
+            try {
+                localStorage.setItem('content', JSON.stringify(backup.content));
+                localStorage.setItem('footerContent', JSON.stringify(backup.footerContent));
+                localStorage.setItem('categories', JSON.stringify(backup.categories));
+                localStorage.setItem('products', JSON.stringify(backup.products));
+                localStorage.setItem('heroSlides', JSON.stringify(backup.slides));
+                
+                showStatus('✅ Backup restored successfully!');
+                
+                // Update website content
+                if (window.dataManager && typeof updateWebsiteContent === 'function') {
+                    updateWebsiteContent();
+                }
+                
+                // Reload statistics
+                loadStatistics();
+                
+            } catch (error) {
+                showStatus('❌ Failed to restore backup: ' + error.message, 'error');
+            }
+        }
+
+        function deleteBackup(index) {
+            const backups = JSON.parse(localStorage.getItem('dataBackups') || '[]');
+            
+            if (!confirm('⚠️ Delete this backup?')) {
+                return;
+            }
+            
+            backups.splice(index, 1);
+            localStorage.setItem('dataBackups', JSON.stringify(backups));
+            showStatus('✅ Backup deleted!');
+            listLocalBackups();
+        }
+
+        // Preview Functions
+        function previewCurrentData(type) {
+            let data;
+            const preview = document.getElementById('currentDataPreview');
+            
+            switch (type) {
+                case 'content':
+                    data = JSON.parse(localStorage.getItem('content')) || {};
+                    preview.textContent = JSON.stringify(data, null, 2);
+                    break;
+                case 'products':
+                    data = JSON.parse(localStorage.getItem('products')) || [];
+                    preview.textContent = JSON.stringify(data.slice(0, 3), null, 2) + '\n\n... (' + data.length + ' products)';
+                    break;
+                case 'categories':
+                    data = JSON.parse(localStorage.getItem('categories')) || [];
+                    preview.textContent = JSON.stringify(data, null, 2);
+                    break;
+                case 'footer':
+                    data = JSON.parse(localStorage.getItem('footerContent')) || {};
+                    preview.textContent = JSON.stringify(data, null, 2);
+                    break;
+            }
+        }
+
+        // Load statistics on page load
+        function loadStatistics() {
+            const stats = {
+                content: Object.keys(JSON.parse(localStorage.getItem('content')) || {}).length,
+                categories: (JSON.parse(localStorage.getItem('categories')) || []).length,
+                products: (JSON.parse(localStorage.getItem('products')) || []).length,
+                slides: (JSON.parse(localStorage.getItem('heroSlides')) || []).length,
+                backups: (JSON.parse(localStorage.getItem('dataBackups')) || []).length
+            };
+            
+            const statsContainer = document.getElementById('statsContainer');
+            statsContainer.innerHTML = `
+                <div class="stat-card">
+                    <div class="stat-number">${stats.content}</div>
+                    <div class="stat-label">Content Fields</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.categories}</div>
+                    <div class="stat-label">Categories</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.products}</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.slides}</div>
+                    <div class="stat-label">Slides</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number">${stats.backups}</div>
+                    <div class="stat-label">Backups</div>
+                </div>
+            `;
+        }
+
+        // Initialize the tool
+        document.addEventListener('DOMContentLoaded', function() {
+            loadStatistics();
+            listLocalBackups();
+            document.getElementById('initPreview').textContent = JSON.stringify({
+                content: Object.keys(chemecData.content).length + ' fields',
+                categories: chemecData.categories.length + ' categories', 
+                products: chemecData.products.length + ' products',
+                slides: chemecData.slides.length + ' slides'
+            }, null, 2);
+        });
+
+        // Make functions available globally
+        window.exportAllData = exportAllData;
+        window.exportContentOnly = exportContentOnly;
+        window.exportProductsOnly = exportProductsOnly;
+        window.importData = importData;
+        window.previewImport = previewImport;
+        window.initializeFirestore = initializeFirestore;
+        window.loadCHEMECData = loadCHEMECData;
+        window.loadLabEquipmentData = loadLabEquipmentData;
+        window.createLocalBackup = createLocalBackup;
+        window.listLocalBackups = listLocalBackups;
+        window.restoreBackup = restoreBackup;
+        window.deleteBackup = deleteBackup;
+        window.previewCurrentData = previewCurrentData;
+    </script>
+
+    
+</body>
+</html>

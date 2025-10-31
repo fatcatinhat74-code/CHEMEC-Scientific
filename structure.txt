@@ -1,0 +1,19 @@
+steel-pipeline-website/
+├── index.html
+├── about.html
+├── products.html
+├── category.html
+├── achievements.html
+├── admin.html
+├──search-results.html
+├── css/
+│   ├── style.css
+│   └── admin.css
+├── js/
+│   ├── main.js
+│   ├── admin.js
+│   └── data.js
+├── images/
+│   ├── hero-banner.jpg (placeholder)
+│   └── products/ (folder for product images)
+└── README.md

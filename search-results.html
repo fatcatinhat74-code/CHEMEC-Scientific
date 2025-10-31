@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نتائج البحث - توب ستيل</title>
+    <link rel="stylesheet" href="css/style-rtl.css">
+    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
+    <link rel="apple-touch-icon" href="images/logo-placeholder.png">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+
+        <!-- Load scripts in correct order -->
+    <script src="js/firebase-config.js"></script>
+    <script src="js/data.js"></script>
+    <script src="js/navbar.js"></script>
+    <script src="js/main.js"></script>
+</head>
+<body>
+
+
+<div class="loading-spinner">
+    <img src="images/spinner.gif" alt="">
+</div>
+    <section class="search-results-page">
+        <div class="container">
+            <div class="page-header">
+                <h1 id="search-results-title">نتائج البحث</h1>
+                <p id="search-results-description"></p>
+            </div>
+            
+            <div class="search-info" id="search-info">
+                <div class="search-stats">
+                    <span id="results-count">0</span> نتيجة بحث
+                </div>
+                <div class="search-query">
+                    عن: "<span id="search-query-text"></span>"
+                </div>
+            </div>
+
+            <div id="search-results-container" class="products-grid">
+                <!-- Search results will be loaded here -->
+            </div>
+
+            <div id="no-results" class="no-results-message" style="display: none;">
+                <div class="no-results-icon">🔍</div>
+                <h3>لا توجد نتائج</h3>
+                <p>لم نتمكن من العثور على أي منتجات تطابق بحثك.</p>
+                <a href="products.html" class="cta-button">استعرض جميع المنتجات</a>
+            </div>
+
+            <div class="text-center" id="back-to-products" style="display: none;">
+                <a href="products.html" class="cta-button secondary">العودة إلى المنتجات</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', async function() {
+            await loadSearchResults();
+        });
+
+        async function loadSearchResults() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const searchQuery = urlParams.get('q');
+            
+            if (!searchQuery) {
+                window.location.href = 'products.html';
+                return;
+            }
+
+            // Update page content
+            document.getElementById('search-query-text').textContent = searchQuery;
+            document.getElementById('search-results-description').textContent = 
+                `نتائج البحث عن "${searchQuery}"`;
+
+            if (!window.dataManager) {
+                console.error('DataManager not available');
+                return;
+            }
+
+            try {
+                const products = await window.dataManager.getProductsFromFirestore();
+                const filteredProducts = products.filter(product => 
+                    product.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    product.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    product.specs?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                    product.categoryId?.toString().includes(searchQuery)
+                );
+
+                displaySearchResults(filteredProducts, searchQuery);
+            } catch (error) {
+                console.error('Error loading search results:', error);
+                document.getElementById('search-results-container').innerHTML = 
+                    '<p>حدث خطأ أثناء تحميل نتائج البحث.</p>';
+            }
+        }
+
+        function displaySearchResults(products, searchQuery) {
+            const container = document.getElementById('search-results-container');
+            const noResults = document.getElementById('no-results');
+            const searchInfo = document.getElementById('search-info');
+            const backButton = document.getElementById('back-to-products');
+            const resultsCount = document.getElementById('results-count');
+
+            resultsCount.textContent = products.length;
+
+            if (products.length === 0) {
+                container.style.display = 'none';
+                noResults.style.display = 'block';
+                backButton.style.display = 'block';
+                return;
+            }
+
+            container.style.display = 'grid';
+            noResults.style.display = 'none';
+            backButton.style.display = 'block';
+            searchInfo.style.display = 'block';
+
+            container.innerHTML = products.map(product => `
+                <div class="product-card" onclick="window.location.href='category.html?categoryId=${product.categoryId}'">
+                    <img src="${product.image || 'https://via.placeholder.com/400'}" alt="${product.name}" 
+                         onerror="this.src='https://via.placeholder.com/400'">
+                    <h3>${product.name}</h3>
+                    <p>${product.description || ''}</p>
+                    ${product.specs ? `<div class="specs">${product.specs.replace(/\n/g, '<br>')}</div>` : ''}
+                    <div class="price">${product.price || 'اتصل للاستعلام'}</div>
+                    <div class="search-result-category-badge">
+                        ${getCategoryName(product.categoryId)}
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function getCategoryName(categoryId) {
+            if (!window.dataManager) return 'عام';
+            const categories = window.dataManager.getCategories();
+            const category = categories.find(cat => cat.id === categoryId);
+            return category ? category.name : 'عام';
+        }
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize page title
+        if (window.dataManager && typeof updatePageTitles === 'function') {
+            const content = window.dataManager.getContent();
+            if (content['website-name']) {
+                updatePageTitles(content['website-name']);
+            }
+        }
+        
+        // Search results functionality
+        // Add your search results loading code here
+    });
+</script>
+</body>
+</html>
