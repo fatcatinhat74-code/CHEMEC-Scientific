@@ -1,131 +1,83 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-    <link rel="apple-touch-icon" href="images/logo-placeholder.png">
-
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- Loading Spinner - MUST be inside body -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <img src="images/spinner.gif" alt="Loading...">
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+
+  <section class="intro-section">
+    <div class="container">
+      <h2 id="intro-title"></h2>
+      <p id="intro-text"></p>
     </div>
+  </section>
 
-    <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
-
-    <!-- Navigation will be injected by navbar.js -->
-
-    <!-- In index.html - Make sure these IDs exist -->
-    <section class="intro-section">
-        <div class="container">
-            <h2 id="intro-title"></h2>
-            <p id="intro-text"></p>
+  <section class="services-section">
+    <div class="container">
+      <h2 id="services-title"></h2>
+      <div class="services-grid">
+        <div class="service-card">
+          <h3 id="service-1-title"></h3>
+          <p id="service-1-desc"></p>
         </div>
-    </section>
-
-    <section class="services-section">
-        <div class="container">
-            <h2 id="services-title"> </h2>
-            <div class="services-grid">
-                <div class="service-card">
-                    <h3 id="service-1-title"></h3>
-                    <p id="service-1-desc"></p>
-                </div>
-                <div class="service-card">
-                    <h3 id="service-2-title"></h3>
-                    <p id="service-2-desc"></p>
-                </div>
-                <div class="service-card">
-                    <h3 id="service-3-title"></h3>
-                    <p id="service-3-desc"></p>
-                </div>
-            </div>
+        <div class="service-card">
+          <h3 id="service-2-title"></h3>
+          <p id="service-2-desc"></p>
         </div>
-    </section>
-
-    <!-- In index.html - Fix the featured products section -->
-    <section class="featured-products">
-        <div class="container">
-            <h2>Explore our products </h2>
-            <div class="products-grid" id="featured-products-container">
-                <!-- Products will be loaded dynamically -->
-            </div>
-            <div class="text-center">
-                <a href="category.html" class="cta-button secondary">عرض جميع المنتجات</a>
-            </div>
+        <div class="service-card">
+          <h3 id="service-3-title"></h3>
+          <p id="service-3-desc"></p>
         </div>
-    </section>
+      </div>
+    </div>
+  </section>
 
-    <script>
-        // Function to hide loading spinner
-        function hideLoadingSpinner() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.style.display = 'none';
-                console.log('✅ Loading spinner hidden');
-            }
-        }
+  <section class="featured-products">
+    <div class="container">
+      <h2>Explore our products</h2>
+      <div class="products-grid" id="featured-products-container"></div>
+      <div class="text-center">
+        <a href="products.html" class="cta-button secondary">View all categories</a>
+      </div>
+    </div>
+  </section>
 
-        // Function to show loading spinner
-        function showLoadingSpinner() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.style.display = 'flex';
-            }
-        }
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
+      if (typeof loadFeaturedProducts === 'function') {
+        await loadFeaturedProducts();
+      }
+      hideLoadingSpinner();
+    });
+  </script>
 
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🏠 Index page loaded successfully');
-            showLoadingSpinner();
-            
-            try {
-                // Initialize page title
-                if (window.dataManager && typeof updatePageTitles === 'function') {
-                    const content = window.dataManager.getContent();
-                    if (content['website-name']) {
-                        updatePageTitles(content['website-name']);
-                    }
-                }
-                
-                // ONLY load featured products on homepage
-                if (typeof loadFeaturedProducts === 'function') {
-                    console.log('🔄 Loading featured products for homepage...');
-                    await loadFeaturedProducts();
-                } else {
-                    console.error('❌ loadFeaturedProducts function not found');
-                }
-                
-                console.log('✅ Index page initialization complete');
-            } catch (error) {
-                console.error('❌ Error in index page initialization:', error);
-            } finally {
-                // Always hide spinner whether successful or not
-                hideLoadingSpinner();
-            }
-        });
-
-        // Fallback: hide spinner after 10 seconds no matter what
-        setTimeout(() => {
-            hideLoadingSpinner();
-        }, 10000);
-    </script>
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>

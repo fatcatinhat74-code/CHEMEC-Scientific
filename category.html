@@ -1,69 +1,61 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-    <link rel="apple-touch-icon" href="images/logo-placeholder.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
 
-
-  <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
-
-    <div class="loading-spinner">
-        <img src="images/spinner.gif" alt="">
+  <section class="page-header">
+    <div class="container">
+      <h1 id="category-title">Category</h1>
+      <p id="category-description">Explore products in this category</p>
     </div>
+  </section>
 
-    <!-- Add this header section back -->
-    <section class="page-header">
-        <div class="container">
-            <h1 id="category-title">فئة المنتج</h1>
-            <p id="category-description">استكشف منتجاتنا في هذه الفئة</p>
-        </div>
-    </section>
+  <section class="category-products">
+    <div class="container">
+      <div id="products-container" class="products-grid"></div>
+      <div class="text-center">
+        <a href="products.html" class="cta-button secondary">Back to Categories</a>
+      </div>
+    </div>
+  </section>
 
-    <section class="category-products">
-        <div class="container">
-            <div id="products-container" class="products-grid">
-                <!-- Products will be loaded dynamically -->
-            </div>
-            <div class="text-center">
-                <a href="products.html" class="cta-button secondary">العودة إلى الفئات</a>
-            </div>
-        </div>
-    </section>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
+      if (typeof loadCategoryProducts === 'function') {
+        await loadCategoryProducts();
+      }
+    });
+  </script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Initialize page title
-            if (window.dataManager && typeof updatePageTitles === 'function') {
-                const content = window.dataManager.getContent();
-                if (content['website-name']) {
-                    updatePageTitles(content['website-name']);
-                }
-            }
-            
-            // Load category products - ALWAYS from Firestore
-            if (typeof loadCategoryProducts === 'function') {
-                await loadCategoryProducts();
-            }
-        });
-    </script>
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>

@@ -1,102 +1,58 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-    <link rel="apple-touch-icon" href="images/logo-placeholder.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- Loading Spinner - MUST be inside body -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <img src="images/spinner.gif" alt="Loading...">
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+
+  <section class="page-header">
+    <div class="container">
+      <h1>Products</h1>
+      <p>Browse our product categories</p>
     </div>
+  </section>
 
-    <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
+  <section class="products-categories">
+    <div class="container">
+      <div id="products-container" class="products-grid"></div>
+    </div>
+  </section>
 
-    <!-- Add header section -->
-    <section class="page-header">
-        <div class="container">
-            <h1>منتجاتنا</h1>
-            <p>استكشف مجموعة حلول أنابيب الصلب الشاملة لدينا</p>
-        </div>
-    </section>
+  <script>
+    document.addEventListener('DOMContentLoaded', async function() {
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
+      if (typeof loadProductCategories === 'function') {
+        await loadProductCategories();
+      }
+    });
+  </script>
 
-    <section class="products-categories">
-        <div class="container">
-            <div id="products-container" class="products-grid">
-                <!-- Categories will be loaded dynamically from Firestore -->
-            </div>
-        </div>
-    </section>
-
-    <script>
-        // Function to hide loading spinner
-        function hideLoadingSpinner() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.style.display = 'none';
-                console.log('✅ Loading spinner hidden');
-            }
-        }
-
-        // Function to show loading spinner
-        function showLoadingSpinner() {
-            const spinner = document.getElementById('loadingSpinner');
-            if (spinner) {
-                spinner.style.display = 'flex';
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', async function() {
-            console.log('🛍️ Products page loaded successfully');
-            showLoadingSpinner();
-            
-            try {
-                // Initialize page title
-                if (window.dataManager && typeof updatePageTitles === 'function') {
-                    const content = window.dataManager.getContent();
-                    if (content['website-name']) {
-                        updatePageTitles(content['website-name']);
-                    }
-                }
-                
-                // Load product categories - ALWAYS from Firestore
-                if (typeof loadProductCategories === 'function') {
-                    console.log('🔄 Loading product categories...');
-                    await loadProductCategories();
-                } else {
-                    console.error('❌ loadProductCategories function not found');
-                }
-                
-                console.log('✅ Products page initialization complete');
-            } catch (error) {
-                console.error('❌ Error in products page initialization:', error);
-            } finally {
-                // Always hide spinner whether successful or not
-                hideLoadingSpinner();
-            }
-        });
-
-        // Fallback: hide spinner after 10 seconds no matter what
-        setTimeout(() => {
-            hideLoadingSpinner();
-        }, 10000);
-    </script>
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>

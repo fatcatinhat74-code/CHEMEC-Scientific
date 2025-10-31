@@ -1,112 +1,93 @@
 <!DOCTYPE html>
-<html lang="en" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-    <link rel="apple-touch-icon" href="images/logo-placeholder.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
 
-    <div class="loading-spinner">
-        <img src="images/spinner.gif" alt="">
-    </div>
+  <!-- Hero area is injected by navbar.js -->
 
-    <!-- Hero section will be injected by navbar.js -->
-    <!-- The navigation system will add the hero section here -->
+  <section class="about-content">
+    <div class="container">
+      <div class="about-section">
+        <h2 id="about-history-title"></h2>
+        <p id="about-history-text"></p>
+      </div>
 
-    <!-- About Content Section -->
-    <section class="about-content">
-        <div class="container">
-            <div class="about-section">
-                <h2 id="about-history-title">تاريخنا</h2>
-                <p id="about-history-text">تأسست توب ستيل في عام 1998 كمزود رائد لأنابيب الصلب عالية الجودة في السوق المصري والعالمي.</p>
-            </div>
+      <div class="about-section">
+        <h2 id="about-mission-title"></h2>
+        <p id="about-mission-text"></p>
+      </div>
 
-            <div class="about-section">
-                <h2 id="about-mission-title">مهمتنا</h2>
-                <p id="about-mission-text">مهمتنا هي توفير حلول أنابيب الصلب المتميزة التي تلبي أعلى معايير الجودة والسلامة.</p>
-            </div>
+      <div class="about-section">
+        <h2 id="about-vision-title"></h2>
+        <p id="about-vision-text"></p>
+      </div>
 
-            <div class="about-section">
-                <h2 id="about-vision-title">رؤيتنا</h2>
-                <p id="about-vision-text">أن نكون الشركة الرائدة في مجال أنابيب الصلب في المنطقة، معترفًا بنا لتميزنا في الجودة والابتكار والاستدامة.</p>
-            </div>
-
-  <div class="about-section">
-    <h2>Why Choose CHEMEC Scientific?</h2>
-    <div class="features-grid">
-        <div class="feature-card">
+      <div class="about-section">
+        <h2>Why Choose Us?</h2>
+        <div class="features-grid">
+          <div class="feature-card">
             <h3>Industry Expertise</h3>
-            <p>Over 15 years of experience in laboratory instruments and scientific equipment supply</p>
-        </div>
-        <div class="feature-card">
-            <h3>Quality Certifications</h3>
-            <p>Authorized distributor of ISO-certified brands with full quality assurance</p>
-        </div>
-        <div class="feature-card">
+            <p>Extensive experience in scientific instruments and laboratory solutions.</p>
+          </div>
+          <div class="feature-card">
+            <h3>Quality Assurance</h3>
+            <p>Authorized distributors of certified brands with full warranty support.</p>
+          </div>
+          <div class="feature-card">
             <h3>Regional Presence</h3>
-            <p>Serving clients across Egypt and the Middle East with reliable delivery networks</p>
-        </div>
-        <div class="feature-card">
+            <p>Serving clients locally and across the Middle East.</p>
+          </div>
+          <div class="feature-card">
             <h3>Technical Support</h3>
-            <p>Comprehensive installation, training, and maintenance services by certified engineers</p>
-        </div>
-        <div class="feature-card">
+            <p>Installation, training, and maintenance by certified engineers.</p>
+          </div>
+          <div class="feature-card">
             <h3>Wide Product Range</h3>
-            <p>Complete portfolio of analytical instruments, lab equipment, and consumables</p>
-        </div>
-        <div class="feature-card">
+            <p>Complete portfolio of analytical instruments, lab equipment, and consumables.</p>
+          </div>
+          <div class="feature-card">
             <h3>Customer Focus</h3>
-            <p>Personalized solutions and responsive support for all your laboratory needs</p>
+            <p>Tailored solutions and responsive support.</p>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-</div>
-</section>
+  </section>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', async function() {
-            // Initialize page title
-            if (window.dataManager && typeof updatePageTitles === 'function') {
-                const content = window.dataManager.getContent();
-                if (content['website-name']) {
-                    updatePageTitles(content['website-name']);
-                }
-            }
-            
-            // About page content is automatically updated by updateWebsiteContent()
-            console.log('About page loaded successfully');
-        });
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
+    });
+  </script>
 
-        // Add error handling for navigation
-        window.addEventListener('error', function(e) {
-            console.error('Page error:', e.error);
-        });
-
-        // Prevent any accidental redirects
-        document.addEventListener('click', function(e) {
-            if (e.target.tagName === 'A' && e.target.getAttribute('href') === 'products.html') {
-                console.log('Navigation to products detected');
-                // Allow normal navigation
-            }
-        });
-    </script>
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>

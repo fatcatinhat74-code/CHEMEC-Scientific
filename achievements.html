@@ -1,126 +1,74 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توب ستيل</title>
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-<link rel="apple-touch-icon" href="images/logo-placeholder.png">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
 </head>
 <body>
-    <!-- Load scripts in correct order -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/data.js"></script>
-    <script src="js/navbar.js"></script>
-    <script src="js/main.js"></script>
-    
-<script>
-    document.addEventListener('DOMContentLoaded', async function() {
-        if (typeof loadFeaturedProducts === 'function') await loadFeaturedProducts();
-        if (typeof loadCategoryProducts === 'function') await loadCategoryProducts();
-    });
-</script>
-</body>
-<div class="loading-spinner">
-    <img src="images/spinner.gif" alt="">
-</div>
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
 
-    <section class="page-header">
-        <div class="container">
-            <h1>إنجازاتنا</h1>
-            <p>الاحتفاء بمعالمنا والتقدير في صناعة أنابيب الصلب</p>
+  <section class="page-header">
+    <div class="container">
+      <h1>Achievements</h1>
+      <p>Milestones and recognitions</p>
+    </div>
+  </section>
+
+  <section class="achievements-content">
+    <div class="container">
+      <div class="achievement-section">
+        <h2 id="projects-title">Major Projects</h2>
+        <div class="achievements-grid" id="projects-container">
+          <p class="muted">No projects added yet.</p>
         </div>
-    </section>
+      </div>
 
-    <section class="achievements-content">
-        <div class="container">
-            <!-- Major Projects -->
-            <div class="achievement-section">
-                <h2 id="projects-title">المشاريع الرئيسية</h2>
-                <div class="achievements-grid" id="projects-container">
-                    <div class="achievement-card">
-                        <h3>خط أنابيب عابر للقارات</h3>
-                        <p class="achievement-year">2023</p>
-                        <p>تزويد 500 كم من أنابيب الصلب عالية الضغط لنقل النفط عبر الحدود</p>
-                    </div>
-                    <div class="achievement-card">
-                        <h3>نظام مياه المدينة</h3>
-                        <p class="achievement-year">2022</p>
-                        <p>توفير أنابيب مقاومة للتآكل لشبكة توزيع المياه الحضرية التي تخدم 2 مليون شخص</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Certifications -->
-            <div class="achievement-section">
-                <h2 id="certifications-title">الشهادات والجوائز</h2>
-                <div class="achievements-grid" id="certifications-container">
-                    <div class="achievement-card">
-                        <h3>شهادة ISO 9001:2015</h3>
-                        <p>شهادة نظام إدارة الجودة</p>
-                    </div>
-                    <div class="achievement-card">
-                        <h3>الامتثال لـ API 5L</h3>
-                        <p>مواصفات معهد البترول الأمريكي لأنابيب الخط</p>
-                    </div>
-                    <div class="achievement-card">
-                        <h3>جائزة التميز الصناعي 2022</h3>
-                        <p>تم الاعتراف بالابتكار في حلول الأنابيب المستدامة</p>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Milestones -->
-            <div class="achievement-section">
-                <h2 id="milestones-title">محطات الشركة</h2>
-                <div class="timeline" id="milestones-container">
-                    <div class="timeline-item">
-                        <div class="timeline-year">1998</div>
-                        <div class="timeline-content">
-                            <h3>تأسيس الشركة</h3>
-                            <p>بدء العمليات بأول منشأة تصنيع</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-year">2005</div>
-                        <div class="timeline-content">
-                            <h3>التوسع الدولي</h3>
-                            <p>بدأ التصدير إلى الأسواق الأوروبية والآسيوية</p>
-                        </div>
-                    </div>
-                    <div class="timeline-item">
-                        <div class="timeline-year">2018</div>
-                        <div class="timeline-content">
-                            <h3>منشأة متطورة</h3>
-                            <p>افتتاح مصنع تصنيع آلي جديد</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+      <div class="achievement-section">
+        <h2 id="certifications-title">Certifications & Awards</h2>
+        <div class="achievements-grid" id="certifications-container">
+          <p class="muted">No certifications added yet.</p>
         </div>
-    </section>
+      </div>
 
+      <div class="achievement-section">
+        <h2 id="milestones-title">Company Milestones</h2>
+        <div class="timeline" id="milestones-container">
+          <p class="muted">No milestones added yet.</p>
+        </div>
+      </div>
+    </div>
+  </section>
 
-<script>
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize page title
-        if (window.dataManager && typeof updatePageTitles === 'function') {
-            const content = window.dataManager.getContent();
-            if (content['website-name']) {
-                updatePageTitles(content['website-name']);
-            }
-        }
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
     });
-</script>
+  </script>
+
+  <script>
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
 </body>
 </html>

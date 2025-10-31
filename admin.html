@@ -1,423 +1,344 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="css/style-rtl.css">
-    <link rel="stylesheet" href="css/admin.css">
-
-    <link rel="icon" type="image/png" href="images/logo-placeholder.png">
-<link rel="apple-touch-icon" href="images/logo-placeholder.png">
-        <!-- Cairo Font (Most Popular for Arabic) -->
-<link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-<!-- Tajawal Font (Clean & Modern) -->
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@300;400;500;700;800&display=swap" rel="stylesheet">
-
-<!-- Amiri Font (Elegant & Traditional) -->
-<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&display=swap" rel="stylesheet">
-
-<!-- Changa Font (Modern & Geometric) -->
-<link href="https://fonts.googleapis.com/css2?family=Changa:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<!-- Firebase SDKs -->
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
-
-<!-- Firebase configuration (initializes firebase & db) -->
-<script src="js/firebase-config.js"></script>
-
-<!-- Data manager (depends on db) -->
-<script src="js/data.js"></script>
-
-<!-- Other scripts -->
-<script src="js/navbar.js"></script>
-<script src="js/admin.js"></script>
-
-
-
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="stylesheet" href="css/admin.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/admin.js"></script>
 </head>
 <body>
-
-
-    <div class="admin-container">
-        <!-- Login Section -->
-        <div id="login-section" class="admin-section">
-            <div class="login-form">
-                <h2>تسجيل دخول المشرف</h2>
-                <form id="loginForm">
-                    <div class="form-group">
-                        <label for="username">اسم المستخدم:</label>
-                        <input type="text" id="username" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password">كلمة المرور:</label>
-                        <input type="password" id="password" required>
-                    </div>
-                    <button type="submit" class="cta-button">تسجيل الدخول</button>
-                </form>
-                <p class="login-note">بيانات الاعتماد الافتراضية: admin / password123</p>
-            </div>
-        </div>
-
-        <!-- Admin Dashboard (Hidden until login) -->
-        <div id="admin-dashboard" class="admin-section hidden">
-            <div class="dashboard-header">
-                <h2>لوحة تحكم المشرف</h2>
-                <button id="logout-btn" class="logout-button">تسجيل الخروج</button>
-            </div>
-
-            <div class="admin-tabs">
-                <button class="tab-button active" data-tab="home-content">محتوى الصفحة الرئيسية</button>
-                <button class="tab-button" data-tab="page-headers-content">محتوى رأس الصفحات</button>
-
-                <button class="tab-button" data-tab="hero-slideshow">شرائح الصفحة الرئيسية</button>
-                <button class="tab-button" data-tab="about-content">محتوى صفحة من نحن</button>
-                <button class="tab-button" data-tab="categories">فئات المنتجات</button>
-                <button class="tab-button" data-tab="products">المنتجات</button>
-                <button class="tab-button" data-tab="achievements-content">الإنجازات</button>
-                <button class="tab-button" data-tab="footer-content">محتوى التذييل</button>
-            </div>
-
-            <!-- In admin.html - Update the home-content tab -->
-            <div id="home-content" class="tab-content active">
-                <h3>تحرير محتوى الصفحة الرئيسية</h3>
-                <form id="home-content-form">
-                    <!-- Website Name -->
-                    <div class="form-group">
-                        <label>اسم الموقع:</label>
-                        <input type="text" id="website-name-input" data-key="website-name" required>
-                        <small class="form-help">هذا هو اسم الشركة الذي يظهر في الشعار</small>
-                    </div>
-                    
-                    <!-- Hero Section -->
-                    <div class="form-group">
-                        <label>عنوان الصفحة الرئيسية:</label>
-                        <input type="text" id="hero-title-input" data-key="hero-title">
-                    </div>
-
-                    <div class="form-group">
-                        <label>نص الصفحة الرئيسية الفرعي:</label>
-                        <textarea id="hero-subtitle-input" data-key="hero-subtitle"></textarea>
-                    </div>
-                    
-                    <!-- Intro Section -->
-                    <div class="form-group">
-                        <label>عنوان قسم المقدمة:</label>
-                        <input type="text" id="intro-title-input" data-key="intro-title">
-                    </div>
-                    <div class="form-group">
-                        <label>نص قسم المقدمة:</label>
-                        <textarea id="intro-text-input" data-key="intro-text"></textarea>
-                    </div>
-                    
-                    <!-- Services Section -->
-                    <h4>قسم الخدمات</h4>
-                    <div class="form-group">
-                        <label>عنوان قسم الخدمات:</label>
-                        <input type="text" id="services-title-input" data-key="services-title">
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عنوان الخدمة الأولى:</label>
-                            <input type="text" id="service-1-title-input" data-key="service-1-title">
-                            <label>وصف الخدمة الأولى:</label>
-                            <textarea id="service-1-desc-input" data-key="service-1-desc"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label>عنوان الخدمة الثانية:</label>
-                            <input type="text" id="service-2-title-input" data-key="service-2-title">
-                            <label>وصف الخدمة الثانية:</label>
-                            <textarea id="service-2-desc-input" data-key="service-2-desc"></textarea>
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>عنوان الخدمة الثالثة:</label>
-                            <input type="text" id="service-3-title-input" data-key="service-3-title">
-                            <label>وصف الخدمة الثالثة:</label>
-                            <textarea id="service-3-desc-input" data-key="service-3-desc"></textarea>
-                        </div>
-                        <div class="form-group">
-                            <!-- Empty for alignment -->
-                        </div>
-                    </div>
-                    
-                    <button type="submit" class="cta-button">حفظ محتوى الصفحة الرئيسية</button>
-                </form>
-
-
-              </form>
-            </div>
-
-        <div id="page-headers-content" class="tab-content">
-        <h3>محتوى رأس الصفحات</h3>
-        <div class="admin-note">
-            هذا المحتوى يظهر في رأس كل صفحة من صفحات الموقع
-        </div>
-        
-        <!-- ADD FORM ELEMENT WITH ID -->
-        <form id="page-headers-content-form">
-            <div class="form-row">
-                <div class="form-group">
-                    <label>عنوان صفحة من نحن:</label>
-                    <input type="text" id="page-about-title-input" data-key="page-about-title" placeholder="من نحن">
-                    <label>وصف صفحة من نحن:</label>
-                    <textarea id="page-about-desc-input" data-key="page-about-desc" placeholder="تعرف على تاريخنا، مهمتنا، والتزامنا بالتميز"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>عنوان صفحة المنتجات:</label>
-                    <input type="text" id="page-products-title-input" data-key="page-products-title" placeholder="منتجاتنا">
-                    <label>وصف صفحة المنتجات:</label>
-                    <textarea id="page-products-desc-input" data-key="page-products-desc" placeholder="استكشف مجموعة حلول أنابيب الصلب الشاملة لدينا"></textarea>
-                </div>
-            </div>
-            
-            <div class="form-row">
-                <div class="form-group">
-                    <label>عنوان صفحة الإنجازات:</label>
-                    <input type="text" id="page-achievements-title-input" data-key="page-achievements-title" placeholder="إنجازاتنا">
-                    <label>وصف صفحة الإنجازات:</label>
-                    <textarea id="page-achievements-desc-input" data-key="page-achievements-desc" placeholder="الاحتفاء بمعالمنا والتقدير في صناعة أنابيب الصلب"></textarea>
-                </div>
-                <div class="form-group">
-                    <label>عنوان صفحة الأدمن:</label>
-                    <input type="text" id="page-admin-title-input" data-key="page-admin-title" placeholder="لوحة التحكم">
-                    <label>وصف صفحة الأدمن:</label>
-                    <textarea id="page-admin-desc-input" data-key="page-admin-desc" placeholder="إدارة محتوى موقع توب ستيل"></textarea>
-                </div>
-            </div>
-            
-            <button type="submit" class="cta-button">حفظ محتوى رأس الصفحات</button>
+  <div class="admin-container">
+    <div id="login-section" class="admin-section">
+      <div class="login-form">
+        <h2>Admin Login</h2>
+        <form id="loginForm">
+          <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" id="username" required>
+          </div>
+          <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" id="password" required>
+          </div>
+          <button type="submit" class="cta-button">Sign in</button>
         </form>
-                </div>
-                
-            <div id="hero-slideshow" class="tab-content">
-            <h3>إدارة شرائح الصفحة الرئيسية</h3>
-            <p class="admin-note">يمكنك إضافة وتعديل وحذف شرائح الصفحة الرئيسية. فقط الشرائح النشطة سيتم عرضها.</p>
-
-            <!-- Sliedshow Tab -->
-            <div class="slides-management">
-                <h4>إضافة شريحة جديدة</h4>
-                <form id="add-slide-form">
-                    <div class="form-group">
-                        <label>رابط الصورة:</label>
-                        <input type="text" id="slide-image" required placeholder="https://example.com/image.jpg">
-                    </div>
-                    <div class="form-group">
-                        <label>العنوان:</label>
-                        <input type="text" id="slide-title" required placeholder="عنوان الشريحة">
-                    </div>
-                    <div class="form-group">
-                        <label>النص الفرعي:</label>
-                        <textarea id="slide-subtitle" required placeholder="النص الفرعي للشريحة"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>
-                            <input type="checkbox" id="slide-active" checked>
-                            شريحة نشطة
-                        </label>
-                    </div>
-                    <button type="submit" class="cta-button">إضافة شريحة</button>
-                </form>
-
-                <div class="slides-list">
-                    <h4>الشرائح الحالية</h4>
-                    <div id="slides-list-container">
-                        <!-- Slides will be loaded here -->
-                    </div>
-                </div>
-                </div>
-            </div>
-
-            <!-- About Content Tab -->
-            <div id="about-content" class="tab-content">
-                <h3>تحرير محتوى صفحة من نحن</h3>
-                <form id="about-content-form">
-                    <div class="form-group">
-                        <label>عنوان التاريخ:</label>
-                        <input type="text" id="about-history-title-input" data-key="about-history-title">
-                    </div>
-                    <div class="form-group">
-                        <label>نص التاريخ:</label>
-                        <textarea id="about-history-text-input" data-key="about-history-text"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان المهمة:</label>
-                        <input type="text" id="about-mission-title-input" data-key="about-mission-title">
-                    </div>
-                    <div class="form-group">
-                        <label>نص المهمة:</label>
-                        <textarea id="about-mission-text-input" data-key="about-mission-text"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان الرؤية:</label>
-                        <input type="text" id="about-vision-title-input" data-key="about-vision-title">
-                    </div>
-                    <div class="form-group">
-                        <label>نص الرؤية:</label>
-                        <textarea id="about-vision-text-input" data-key="about-vision-text"></textarea>
-                    </div>
-                    <button type="submit" class="cta-button">حفظ محتوى من نحن</button>
-                </form>
-            </div>
-
-            <!-- Categories Tab -->
-            <div id="categories" class="tab-content">
-                <h3>إدارة فئات المنتجات</h3>
-                <form id="add-category-form">
-                    <div class="form-group">
-                        <label>اسم الفئة:</label>
-                        <input type="text" id="category-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>وصف الفئة:</label>
-                        <textarea id="category-description" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>رابط صورة الفئة:</label>
-                        <input type="text" id="category-image" placeholder="https://example.com/image.jpg">
-                    </div>
-                    <button type="submit" class="cta-button">إضافة فئة</button>
-                </form>
-
-                <div class="categories-list">
-                    <h4>الفئات الحالية</h4>
-                    <div id="categories-list-container">
-                        <!-- Categories will be loaded here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Products Tab -->
-            <div id="products" class="tab-content">
-                <h3>إدارة المنتجات</h3>
-                <form id="add-product-form">
-                    <div class="form-group">
-                        <label>اختر الفئة:</label>
-                        <select id="product-category" required>
-                            <option value="">اختر فئة</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>اسم المنتج:</label>
-                        <input type="text" id="product-name" required>
-                    </div>
-                    <div class="form-group">
-                        <label>وصف المنتج:</label>
-                        <textarea id="product-description" required></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>المواصفات:</label>
-                        <textarea id="product-specs" placeholder="الحجم: 2-48 بوصة&#10;المادة: الصلب الكربوني&#10;المعايير: API 5L"></textarea>
-                    </div>
-                    <div class="form-group">
-                        <label>السعر:</label>
-                        <input type="text" id="product-price" placeholder="مثال: 500 أو 500-2000 أو ٥٠٠-٢٠٠٠">
-                        <small class="form-help">يمكنك إدخال السعر بأي صيغة وسيتم تحويله تلقائياً إلى جنيه مصري</small>
-                    </div>
-                    <div class="form-group">
-                        <label>رابط صورة المنتج:</label>
-                        <input type="text" id="product-image" placeholder="https://example.com/product.jpg">
-                    </div>
-                    <button type="submit" class="cta-button">إضافة منتج</button>
-                </form>
-
-                <div class="products-list">
-                    <h4>المنتجات الحالية</h4>
-                    <div id="products-list-container">
-                        <!-- Products will be loaded here -->
-                    </div>
-                </div>
-            </div>
-
-            <!-- Achievements Tab -->
-            <div id="achievements-content" class="tab-content">
-                <h3>تحرير محتوى الإنجازات</h3>
-                <form id="achievements-content-form">
-                    <div class="form-group">
-                        <label>عنوان المشاريع:</label>
-                        <input type="text" id="projects-title-input" data-key="projects-title">
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان الشهادات:</label>
-                        <input type="text" id="certifications-title-input" data-key="certifications-title">
-                    </div>
-                    <div class="form-group">
-                        <label>عنوان المحطات:</label>
-                        <input type="text" id="milestones-title-input" data-key="milestones-title">
-                    </div>
-                    <button type="submit" class="cta-button">حفظ محتوى الإنجازات</button>
-                </form>
-            </div>
-
-
-                <!-- In admin.html - Update the footer-content tab -->
-   <div id="footer-content" class="tab-content">
-    <h3>إدارة محتوى التذييل</h3>
-    <p class="admin-note">يمكنك تعديل جميع محتويات التذييل الظاهرة في جميع صفحات الموقع.</p>
-    
-    <form id="footer-content-form">
-        <div class="form-row">
-            <div class="form-group">
-                <label>اسم الشركة:</label>
-                <input type="text" id="footer-companyName-input" data-key="companyName" required>
-            </div>
-            <div class="form-group">
-                <label>وصف الشركة:</label>
-                <textarea id="footer-companyDescription-input" data-key="companyDescription" required></textarea>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label>البريد الإلكتروني:</label>
-                <input type="email" id="footer-email-input" data-key="email" required>
-            </div>
-            <div class="form-group">
-                <label>الهاتف:</label>
-                <input type="text" id="footer-phone-input" data-key="phone" required>
-            </div>
-        </div>
-        
-        <div class="form-group">
-            <label>العنوان:</label>
-            <textarea id="footer-address-input" data-key="address" required></textarea>
-        </div>
-        
-        <h4>روابط وسائل التواصل</h4>
-        <div class="form-row">
-            <div class="form-group">
-                <label>رابط الفيسبوك:</label>
-                <input type="url" id="footer-facebook-input" data-key="facebook" placeholder="https://facebook.com/yourpage">
-            </div>
-            <div class="form-group">
-                <label>رقم الواتساب:</label>
-                <input type="text" id="footer-whatsapp-input" data-key="whatsapp" placeholder="+201234567890">
-                <small class="form-help">أدخل رقم الهاتف بالصيغة الدولية (مثال: +201234567890)</small>
-            </div>
-        </div>
-        
-        <button type="submit" class="cta-button">حفظ محتوى التذييل</button>
-    </form>
-</div>
-
-        </div>
+        <p class="login-note">Default credentials: <strong>admin / password123</strong></p>
+      </div>
     </div>
 
+    <div id="admin-dashboard" class="admin-section hidden">
+      <div class="dashboard-header">
+        <h2>Admin Dashboard</h2>
+        <button id="logout-btn" class="logout-button">Sign out</button>
+      </div>
 
-<script>
+      <div class="admin-tabs">
+        <button class="tab-button active" data-tab="home-content">Home Content</button>
+        <button class="tab-button" data-tab="page-headers-content">Page Headers</button>
+        <button class="tab-button" data-tab="hero-slideshow">Hero Slides</button>
+        <button class="tab-button" data-tab="about-content">About Page</button>
+        <button class="tab-button" data-tab="categories">Categories</button>
+        <button class="tab-button" data-tab="products">Products</button>
+        <button class="tab-button" data-tab="achievements-content">Achievements</button>
+        <button class="tab-button" data-tab="footer-content">Footer</button>
+      </div>
+
+      <div id="home-content" class="tab-content active">
+        <h3>Edit Homepage Content</h3>
+        <form id="home-content-form">
+          <div class="form-group">
+            <label>Website Name:</label>
+            <input type="text" id="website-name-input" data-key="website-name" required>
+            <small class="form-help">Displayed in the header and page titles.</small>
+          </div>
+          <div class="form-group">
+            <label>Home Title:</label>
+            <input type="text" id="hero-title-input" data-key="hero-title">
+          </div>
+          <div class="form-group">
+            <label>Home Subtitle:</label>
+            <textarea id="hero-subtitle-input" data-key="hero-subtitle"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Intro Title:</label>
+            <input type="text" id="intro-title-input" data-key="intro-title">
+          </div>
+          <div class="form-group">
+            <label>Intro Text:</label>
+            <textarea id="intro-text-input" data-key="intro-text"></textarea>
+          </div>
+
+          <h4>Services</h4>
+          <div class="form-group">
+            <label>Services Section Title:</label>
+            <input type="text" id="services-title-input" data-key="services-title">
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Service 1 Title</label>
+              <input type="text" id="service-1-title-input" data-key="service-1-title">
+              <label>Service 1 Description</label>
+              <textarea id="service-1-desc-input" data-key="service-1-desc"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Service 2 Title</label>
+              <input type="text" id="service-2-title-input" data-key="service-2-title">
+              <label>Service 2 Description</label>
+              <textarea id="service-2-desc-input" data-key="service-2-desc"></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Service 3 Title</label>
+              <input type="text" id="service-3-title-input" data-key="service-3-title">
+              <label>Service 3 Description</label>
+              <textarea id="service-3-desc-input" data-key="service-3-desc"></textarea>
+            </div>
+            <div class="form-group"></div>
+          </div>
+          <button type="submit" class="cta-button">Save Home Content</button>
+        </form>
+      </div>
+
+      <div id="page-headers-content" class="tab-content">
+        <h3>Page Headers</h3>
+        <form id="page-headers-content-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>About Title</label>
+              <input type="text" id="page-about-title-input" data-key="page-about-title" placeholder="About Us">
+              <label>About Subtitle</label>
+              <textarea id="page-about-desc-input" data-key="page-about-desc" placeholder="Learn about our history and mission"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Products Title</label>
+              <input type="text" id="page-products-title-input" data-key="page-products-title" placeholder="Products">
+              <label>Products Subtitle</label>
+              <textarea id="page-products-desc-input" data-key="page-products-desc" placeholder="Explore our product categories"></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Achievements Title</label>
+              <input type="text" id="page-achievements-title-input" data-key="page-achievements-title" placeholder="Achievements">
+              <label>Achievements Subtitle</label>
+              <textarea id="page-achievements-desc-input" data-key="page-achievements-desc" placeholder="Milestones and recognitions"></textarea>
+            </div>
+            <div class="form-group">
+              <label>Admin Title</label>
+              <input type="text" id="page-admin-title-input" data-key="page-admin-title" placeholder="Admin Panel">
+              <label>Admin Subtitle</label>
+              <textarea id="page-admin-desc-input" data-key="page-admin-desc" placeholder="Manage website content"></textarea>
+            </div>
+          </div>
+          <button type="submit" class="cta-button">Save Page Headers</button>
+        </form>
+      </div>
+
+      <div id="hero-slideshow" class="tab-content">
+        <h3>Hero Slides</h3>
+        <p class="admin-note">Only active slides will be displayed.</p>
+        <div class="slides-management">
+          <h4>Add new slide</h4>
+          <form id="add-slide-form">
+            <div class="form-group">
+              <label>Image URL</label>
+              <input type="text" id="slide-image" required placeholder="https://example.com/image.jpg">
+            </div>
+            <div class="form-group">
+              <label>Title</label>
+              <input type="text" id="slide-title" required placeholder="Slide title">
+            </div>
+            <div class="form-group">
+              <label>Subtitle</label>
+              <textarea id="slide-subtitle" required placeholder="Slide subtitle"></textarea>
+            </div>
+            <div class="form-group">
+              <label><input type="checkbox" id="slide-active" checked> Active</label>
+            </div>
+            <button type="submit" class="cta-button">Add slide</button>
+          </form>
+          <div class="slides-list">
+            <h4>Current slides</h4>
+            <div id="slides-list-container"></div>
+          </div>
+        </div>
+      </div>
+
+      <div id="about-content" class="tab-content">
+        <h3>About Page Content</h3>
+        <form id="about-content-form">
+          <div class="form-group">
+            <label>History Title</label>
+            <input type="text" id="about-history-title-input" data-key="about-history-title">
+          </div>
+          <div class="form-group">
+            <label>History Text</label>
+            <textarea id="about-history-text-input" data-key="about-history-text"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Mission Title</label>
+            <input type="text" id="about-mission-title-input" data-key="about-mission-title">
+          </div>
+          <div class="form-group">
+            <label>Mission Text</label>
+            <textarea id="about-mission-text-input" data-key="about-mission-text"></textarea>
+          </div>
+          <div class="form-group">
+            <label>Vision Title</label>
+            <input type="text" id="about-vision-title-input" data-key="about-vision-title">
+          </div>
+          <div class="form-group">
+            <label>Vision Text</label>
+            <textarea id="about-vision-text-input" data-key="about-vision-text"></textarea>
+          </div>
+          <button type="submit" class="cta-button">Save About Content</button>
+        </form>
+      </div>
+
+      <div id="categories" class="tab-content">
+        <h3>Manage Categories</h3>
+        <form id="add-category-form">
+          <div class="form-group">
+            <label>Category Name</label>
+            <input type="text" id="category-name" required>
+          </div>
+          <div class="form-group">
+            <label>Category Description</label>
+            <textarea id="category-description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Category Image URL</label>
+            <input type="text" id="category-image" placeholder="https://example.com/image.jpg">
+          </div>
+          <button type="submit" class="cta-button">Add Category</button>
+        </form>
+        <div class="categories-list">
+          <h4>Current Categories</h4>
+          <div id="categories-list-container"></div>
+        </div>
+      </div>
+
+      <div id="products" class="tab-content">
+        <h3>Manage Products</h3>
+        <form id="add-product-form">
+          <div class="form-group">
+            <label>Select Category</label>
+            <select id="product-category" required>
+              <option value="">Select category</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Product Name</label>
+            <input type="text" id="product-name" required>
+          </div>
+          <div class="form-group">
+            <label>Product Description</label>
+            <textarea id="product-description" required></textarea>
+          </div>
+          <div class="form-group">
+            <label>Specifications</label>
+            <textarea id="product-specs" placeholder="Size: ...\nMaterial: ...\nStandards: ..."></textarea>
+          </div>
+          <div class="form-group">
+            <label>Price</label>
+            <input type="text" id="product-price" placeholder="e.g. 500 or 500-2000">
+          </div>
+          <div class="form-group">
+            <label>Product Image URL</label>
+            <input type="text" id="product-image" placeholder="https://example.com/product.jpg">
+          </div>
+          <button type="submit" class="cta-button">Add Product</button>
+        </form>
+        <div class="products-list">
+          <h4>Current Products</h4>
+          <div id="products-list-container"></div>
+        </div>
+      </div>
+
+      <div id="achievements-content" class="tab-content">
+        <h3>Achievements Text</h3>
+        <form id="achievements-content-form">
+          <div class="form-group">
+            <label>Projects Section Title</label>
+            <input type="text" id="projects-title-input" data-key="projects-title">
+          </div>
+          <div class="form-group">
+            <label>Certifications Section Title</label>
+            <input type="text" id="certifications-title-input" data-key="certifications-title">
+          </div>
+          <div class="form-group">
+            <label>Milestones Section Title</label>
+            <input type="text" id="milestones-title-input" data-key="milestones-title">
+          </div>
+          <button type="submit" class="cta-button">Save Achievements Text</button>
+        </form>
+      </div>
+
+      <div id="footer-content" class="tab-content">
+        <h3>Footer</h3>
+        <p class="admin-note">Edit information shown in the footer on all pages.</p>
+        <form id="footer-content-form">
+          <div class="form-row">
+            <div class="form-group">
+              <label>Company Name</label>
+              <input type="text" id="footer-companyName-input" data-key="companyName" required>
+            </div>
+            <div class="form-group">
+              <label>Company Description</label>
+              <textarea id="footer-companyDescription-input" data-key="companyDescription" required></textarea>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Email</label>
+              <input type="email" id="footer-email-input" data-key="email" required>
+            </div>
+            <div class="form-group">
+              <label>Phone</label>
+              <input type="text" id="footer-phone-input" data-key="phone" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Address</label>
+            <textarea id="footer-address-input" data-key="address" required></textarea>
+          </div>
+          <h4>Social</h4>
+          <div class="form-row">
+            <div class="form-group">
+              <label>Facebook URL</label>
+              <input type="url" id="footer-facebook-input" data-key="facebook" placeholder="https://facebook.com/yourpage">
+            </div>
+            <div class="form-group">
+              <label>WhatsApp Number</label>
+              <input type="text" id="footer-whatsapp-input" data-key="whatsapp" placeholder="+201234567890">
+              <small class="form-help">Use international format (e.g., +201234567890)</small>
+            </div>
+          </div>
+          <button type="submit" class="cta-button">Save Footer</button>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Initialize page title
-        if (window.dataManager && typeof updatePageTitles === 'function') {
-            const content = window.dataManager.getContent();
-            if (content['website-name']) {
-                updatePageTitles(content['website-name']);
-            }
-        }
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
     });
-</script>
+  </script>
 </body>
 </html>
