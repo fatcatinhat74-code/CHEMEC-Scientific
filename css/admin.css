@@ -1,0 +1,600 @@
+/* Admin Panel Styles - RTL */
+.admin-container {
+    min-height: calc(100vh - 200px);
+    margin-top: 70px;
+    padding: 2rem 0;
+}
+
+.admin-section {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* Login Form */
+.login-form {
+    background: white;
+    padding: 3rem;
+    border-radius: 10px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.login-form h2 {
+    color: #2c3e50;
+    margin-bottom: 2rem;
+}
+
+.login-note {
+    margin-top: 1rem;
+    color: #7f8c8d;
+    font-size: 0.9rem;
+}
+
+/* Dashboard */
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.logout-button {
+    background: #e74c3c;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-button:hover {
+    background: #c0392b;
+}
+
+/* Tabs */
+.admin-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+.tab-button {
+    background: none;
+    border: none;
+    padding: 1rem 1.5rem;
+    cursor: pointer;
+    font-weight: 600;
+    color: #7f8c8d;
+    border-bottom: 3px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.tab-button:hover {
+    color: #3498db;
+}
+
+.tab-button.active {
+    color: #3498db;
+    border-bottom-color: #3498db;
+}
+
+.tab-content {
+    display: none;
+}
+
+.tab-content.active {
+    display: block;
+}
+
+/* Forms */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.75rem;
+    border: 2px solid #ecf0f1;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    text-align: right;
+}
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #3498db;
+}
+
+.form-group textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+/* Lists */
+.categories-list,
+.products-list {
+    margin-top: 3rem;
+}
+
+.category-item,
+.product-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.category-info h4,
+.product-info h4 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.category-actions,
+.product-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.edit-btn,
+.delete-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.edit-btn {
+    background: #3498db;
+    color: white;
+}
+
+.edit-btn:hover {
+    background: #2980b9;
+}
+
+.delete-btn {
+    background: #e74c3c;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #c0392b;
+}
+
+/* Success Message */
+.success-message {
+    background: #2ecc71;
+    color: white;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+/* Responsive Admin */
+@media (max-width: 768px) {
+    .login-form {
+        padding: 2rem 1rem;
+    }
+
+    .admin-tabs {
+        flex-direction: column;
+    }
+
+    .tab-button {
+        text-align: right;
+        border-bottom: 1px solid #ecf0f1;
+        border-left: 3px solid transparent;
+    }
+
+    .tab-button.active {
+        border-left-color: #3498db;
+        border-bottom-color: #ecf0f1;
+    }
+
+    .category-item,
+    .product-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .category-actions,
+    .product-actions {
+        align-self: flex-end;
+    }
+}
+
+/* Slideshow Management Styles */
+.admin-note {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 2rem;
+    border-right: 4px solid #3498db;
+    color: #5d6d7e;
+}
+
+.slides-management {
+    margin-top: 2rem;
+}
+
+.slides-list {
+    margin-top: 3rem;
+}
+
+.slide-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    border-right: 4px solid #3498db;
+}
+
+.slide-item.inactive {
+    border-right-color: #95a5a6;
+    opacity: 0.7;
+}
+
+.slide-preview {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 1rem;
+    align-items: flex-start;
+}
+
+.slide-image {
+    width: 200px;
+    height: 120px;
+    border-radius: 5px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.slide-info {
+    flex: 1;
+}
+
+.slide-info h5 {
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem;
+}
+
+.slide-info p {
+    color: #5d6d7e;
+    margin-bottom: 0.5rem;
+    line-height: 1.5;
+}
+
+.slide-status {
+    display: inline-block;
+    padding: 0.3rem 0.8rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.slide-status.active {
+    background: #2ecc71;
+    color: white;
+}
+
+.slide-status.inactive {
+    background: #95a5a6;
+    color: white;
+}
+
+.slide-actions {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.toggle-slide-btn {
+    background: #3498db;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.toggle-slide-btn.inactive {
+    background: #95a5a6;
+}
+
+.toggle-slide-btn:hover {
+    background: #2980b9;
+}
+
+.move-slide-btn {
+    background: #9b59b6;
+    color: white;
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+}
+
+.move-slide-btn:hover {
+    background: #8e44ad;
+}
+
+.move-slide-btn:disabled {
+    background: #bdc3c7;
+    cursor: not-allowed;
+}
+
+/* Responsive Slides Management */
+@media (max-width: 768px) {
+    .slide-preview {
+        flex-direction: column;
+    }
+    
+    .slide-image {
+        width: 100%;
+        height: 150px;
+    }
+    
+    .slide-actions {
+        justify-content: flex-start;
+    }
+}
+
+.form-help {
+    display: block;
+    margin-top: 0.25rem;
+    color: #7f8c8d;
+    font-size: 0.85rem;
+    font-style: italic;
+}
+
+/* Form row styles for better layout */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Footer management specific styles */
+#footer-content-form h4 {
+    color: #2c3e50;
+    margin: 2rem 0 1rem 0;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #ecf0f1;
+}
+
+
+/* In admin.css - Add these styles */
+.form-row {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.form-row .form-group {
+    flex: 1;
+}
+
+.admin-note {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 5px;
+    margin-bottom: 1.5rem;
+    color: #6c757d;
+    border-right: 3px solid #3498db;
+}
+
+.form-help {
+    color: #6c757d;
+    font-size: 0.85rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Slideshow management styles */
+.slides-management {
+    margin-top: 2rem;
+}
+
+.slide-item {
+    background: white;
+    padding: 1.5rem;
+    border-radius: 5px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+    margin-bottom: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.slide-item.inactive {
+    opacity: 0.6;
+    background: #f8f9fa;
+}
+
+.slide-preview {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    flex: 1;
+}
+
+.slide-image {
+    width: 100px;
+    height: 60px;
+    object-fit: cover;
+    border-radius: 3px;
+}
+
+.slide-info {
+    flex: 1;
+}
+
+.slide-info h5 {
+    margin: 0 0 0.5rem 0;
+    color: #2c3e50;
+}
+
+.slide-info p {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.slide-status {
+    padding: 0.25rem 0.5rem;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.slide-status.active {
+    background: #d4edda;
+    color: #155724;
+}
+
+.slide-status.inactive {
+    background: #f8d7da;
+    color: #721c24;
+}
+
+.slide-actions {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.toggle-slide-btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.toggle-slide-btn:not(.inactive) {
+    background: #ffc107;
+    color: #212529;
+}
+
+.toggle-slide-btn.inactive {
+    background: #28a745;
+    color: white;
+}
+
+.move-slide-btn {
+    background: #6c757d;
+    color: white;
+    border: none;
+    padding: 0.5rem;
+    border-radius: 3px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.move-slide-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+}
+
+.hidden {
+    display: none !important;
+}
+
+.admin-notification {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    z-index: 10000;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    font-family: 'Cairo', sans-serif;
+    max-width: 400px;
+}
+
+.admin-notification.success {
+    background: #4CAF50;
+    color: white;
+}
+
+.admin-notification.error {
+    background: #f44336;
+    color: white;
+}
+
+.no-data {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+.login-form {
+    max-width: 400px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-family: 'Cairo', sans-serif;
+}
