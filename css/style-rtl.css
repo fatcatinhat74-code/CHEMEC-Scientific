@@ -361,11 +361,17 @@ h4 {
 }
 
 /* Product and Category Cards */
-.category-card {
-    cursor: pointer;
-    text-decoration: none;
-    color: inherit;
-    display: block;
+.product-card,
+.category-card,
+.search-result-item,
+.products-grid .product-card,
+.featured-products .product-card {
+  cursor: pointer;
+}
+
+.product-card:hover,
+.category-card:hover {
+  opacity: 0.9;
 }
 
 .category-card img,
@@ -1667,3 +1673,158 @@ img[src*="via.placeholder.com"] + .image-placeholder {
 }
 
 
+/* Product Details Page Styles */
+.product-details-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 40px;
+  margin: 40px 0;
+}
+
+.product-image-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.main-product-image {
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.main-product-image img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.product-info-section {
+  flex: 1;
+  min-width: 300px;
+}
+
+.product-info-section h2 {
+  font-size: 2rem;
+  margin-bottom: 15px;
+  color: #2c3e50;
+}
+
+.product-description {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 25px;
+  color: #555;
+}
+
+.product-specs {
+  margin-bottom: 25px;
+}
+
+.product-specs h3 {
+  font-size: 1.3rem;
+  margin-bottom: 10px;
+  color: #2c3e50;
+}
+
+.specs-content {
+  background-color: #f9f9f9;
+  padding: 15px;
+  border-radius: 6px;
+  border-left: 4px solid #3498db;
+  line-height: 1.6;
+}
+
+.product-price {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #e74c3c;
+  margin-bottom: 25px;
+}
+
+.product-actions {
+  display: flex;
+  gap: 15px;
+  flex-wrap: wrap;
+  margin-top:20px;
+   margin-bottom:50px;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .product-details-container {
+    flex-direction: column;
+    gap: 30px;
+  }
+  
+  .product-info-section h2 {
+    font-size: 1.7rem;
+  }
+  
+  .product-actions {
+    flex-direction: column;
+  }
+  
+  .product-actions .cta-button {
+    text-align: center;
+  }
+}
+
+
+
+/* Product Detail Image Styles */
+.product-main-image {
+  position: relative;
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+  background: #f8f9fa;
+  min-height: 400px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.product-main-image img {
+  width: 70%;
+  height: auto;
+  display: block;
+  transition: opacity 0.3s ease;
+}
+
+.image-placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+  height: 400px;
+  background: #f8f9fa;
+  color: #666;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  border: 2px dashed #ddd;
+  border-radius: 8px;
+}
+
+.placeholder-content {
+  text-align: center;
+}
+
+.placeholder-content svg {
+  margin-bottom: 1rem;
+  color: #999;
+}
+
+.image-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 400px;
+  background: #f8f9fa;
+  color: #666;
+  font-family: 'Poppins', sans-serif;
+  font-size: 16px;
+  border-radius: 8px;
+}
