@@ -116,6 +116,10 @@ this.navbarHTML = `
         }
     }
 
+      navigateToProduct(categoryId) {
+        window.location.href = `category.html?categoryId=${categoryId}`;
+        this.hideSearchResults();
+    }
   // =======================================================
     // Search Functionality
     // =======================================================
@@ -266,7 +270,7 @@ this.navbarHTML = `
         const categoryName = this.getCategoryName(product.categoryId);
         
         return `
-            <div class="search-result-item" onclick="navigation.navigateToProduct('${product.categoryId}')">
+            <div class="product-card" onclick="navigateToproductDetails('${product.id}')">
                 <div class="search-result-image">
                     <img src="${product.image || 'https://via.placeholder.com/60'}" alt="${product.name}" onerror="this.src='https://via.placeholder.com/60'">
                 </div>
@@ -287,10 +291,7 @@ this.navbarHTML = `
         return category ? category.name : 'عام';
     }
 
-    navigateToProduct(categoryId) {
-        window.location.href = `category.html?categoryId=${categoryId}`;
-        this.hideSearchResults();
-    }
+  
 
     hideSearchResults() {
         const searchResults = document.getElementById('search-results');

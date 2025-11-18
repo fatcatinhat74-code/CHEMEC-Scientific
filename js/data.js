@@ -393,6 +393,8 @@ function updateWebsiteContent() {
   updateAboutPageContent(content);
 }
 
+
+
 function updateServicesContent(content) {
   const servicesTitle = document.getElementById('services-title');
   if (servicesTitle && content['services-title']) servicesTitle.textContent = content['services-title'];
@@ -475,8 +477,9 @@ async function loadFeaturedProducts() {
     return products;
   }
   const featured = products.slice(0, 3);
+  // Replace this line in loadFeaturedProducts:
   container.innerHTML = featured.map(product => `
-    <div class="product-card" onclick="window.location.href='category.html?categoryId=${product.categoryId}'">
+    <div class="product-card" onclick="navigateToProductDetail('${product.id}')">
       <div class="product-image-container">
         <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
         <div class="image-placeholder" style="display:none;">Image Not Available</div>
@@ -535,18 +538,19 @@ async function loadCategoryProducts() {
   const container = document.getElementById('products-container');
   if (container) {
     if (categoryProducts.length > 0) {
-      container.innerHTML = categoryProducts.map(product => `
-        <div class="product-card">
-          <div class="product-image-container">
-            <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
-            <div class="image-placeholder" style="display:none;">Image Not Available</div>
-          </div>
-          <h3>${product.name}</h3>
-          <p>${product.description || ''}</p>
-          ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
-          <div class="price">${product.price || 'Contact for price'}</div>
-        </div>
-      `).join('');
+// Replace this line in loadCategoryProducts:
+container.innerHTML = categoryProducts.map(product => `
+  <div class="product-card" onclick="navigateToProductDetail('${product.id}')">
+    <div class="product-image-container">
+      <img src="${product.image || 'images/placeholder-image.png'}" alt="${product.name}" onerror="handleImageError(this)">
+      <div class="image-placeholder" style="display:none;">Image Not Available</div>
+    </div>
+    <h3>${product.name}</h3>
+    <p>${product.description || ''}</p>
+    ${product.specs ? `<div class="specs">${product.specs.replace(/\\n/g, '<br>')}</div>` : ''}
+    <div class="price">${product.price || 'Contact for price'}</div>
+  </div>
+`).join('');
     } else {
       container.innerHTML = `
         <div class="no-products">
@@ -557,7 +561,21 @@ async function loadCategoryProducts() {
     }
   }
   return categoryProducts;
+
+
 }
+
+
+// =============================================================
+// Product Navigation Function
+// =============================================================
+function navigateToProductDetail(productId) {
+  window.location.href = `product.html?productId=${productId}`;
+}
+
+// Make it globally available
+window.navigateToProductDetail = navigateToProductDetail;
+
 
 // Image error helpers
 function handleImageError(img) {
@@ -576,5 +594,11 @@ function handleImageError(img) {
       placeholder.style.fontSize = '16px';
       placeholder.style.border = '1px dashed #ddd';
     }
+  }
+  
+  // Also try to load a fallback online placeholder if local one fails
+  if (img.src.includes('placeholder-image.png')) {
+    img.src = 'https://via.placeholder.com/400x300?text=Image+Not+Available';
+    img.style.display = 'block';
   }
 }
