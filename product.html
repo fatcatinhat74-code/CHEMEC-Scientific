@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Product Details - CHEMEC Scientific</title>
+  <link rel="stylesheet" href="css/style-rtl.css" />
+  <link rel="icon" type="image/png" href="images/logo-placeholder.png" />
+  <link rel="apple-touch-icon" href="images/logo-placeholder.png" />
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-firestore.js"></script>
+</head>
+<body>
+  <div class="loading-spinner" id="loadingSpinner">
+      <img src="images/spinner.gif" alt="Loading..." />
+  </div>
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/navbar.js"></script>
+  <script src="js/main.js"></script>
+
+  <section class="page-header">
+    <div class="container">
+      <h1 id="product-title">Product Details</h1>
+      <p id="product-category-name">Loading product information...</p>
+    </div>
+  </section>
+
+  <section class="product-detail">
+    <div class="container">
+      <div class="breadcrumb">
+        <a href="index.html">Home</a> &gt; 
+        <a href="products.html">Products</a> &gt; 
+        <a href="#" id="breadcrumb-category">Category</a> &gt; 
+        <span id="breadcrumb-product">Product</span>
+      </div>
+      
+      <div class="product-detail-container">
+        <div class="product-image-section">
+          <div class="product-main-image">
+            <img id="product-detail-image" src="" alt="Product Image" onerror="handleProductImageError(this)" onload="handleProductImageLoad(this)" />
+            <div class="image-placeholder" id="product-image-placeholder" style="display:none;">
+              <div class="placeholder-content">
+                <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                  <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                  <polyline points="21 15 16 10 5 21"></polyline>
+                </svg>
+                <p>Image Not Available</p>
+              </div>
+            </div>
+            <div class="image-loading" id="product-image-loading" style="display:none;">
+              Loading image...
+            </div>
+          </div>
+        </div>
+        
+        <div class="product-info-section">
+          <h2 id="product-detail-name">Product Name</h2>
+          <div class="product-price" id="product-detail-price">Contact for price</div>
+          <div class="product-description" id="product-detail-description">
+            Product description will appear here.
+          </div>
+          
+          <div class="product-specifications" id="product-specs-container">
+            <h3>Specifications</h3>
+            <div id="product-detail-specs">
+              <p>Product specifications will appear here.</p>
+            </div>
+          </div>
+          
+          <div class="product-actions">
+            <button class="cta-button primary" onclick="contactAboutProduct()">Contact About This Product</button>
+            <button class="cta-button secondary" onclick="goBackToCategory()">Back to Category</button>
+          </div>
+        </div>
+      </div>
+      
+      <div class="related-products-section" id="related-products-container">
+        <h3>Related Products</h3>
+        <div class="products-grid" id="related-products-grid"></div>
+      </div>
+    </div>
+  </section>
+
+  <script>
+    // Product detail functionality
+    let currentProduct = null;
+    let currentCategory = null;
+    
+    // Product image handlers
+    function handleProductImageLoad(img) {
+      console.log('Product image loaded successfully:', img.src);
+      document.getElementById('product-image-loading').style.display = 'none';
+      img.style.display = 'block';
+    }
+    
+    function handleProductImageError(img) {
+      console.error('Failed to load product image:', img.src);
+      img.style.display = 'none';
+      document.getElementById('product-image-loading').style.display = 'none';
+      
+      const placeholder = document.getElementById('product-image-placeholder');
+      if (placeholder) {
+        placeholder.style.display = 'flex';
+      }
+      
+      // Try to use the online placeholder as fallback
+      if (currentProduct && currentProduct.image && !currentProduct.image.includes('via.placeholder.com')) {
+        console.log('Trying online placeholder as fallback...');
+        img.src = 'https://via.placeholder.com/600x400/3498db/ffffff?text=' + encodeURIComponent(currentProduct.name);
+        img.style.display = 'block';
+      }
+    }
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+      console.log('DOM loaded, initializing product page...');
+      
+      if (window.dataManager && typeof updatePageTitles === 'function') {
+        const content = window.dataManager.getContent();
+        if (content['website-name']) updatePageTitles(content['website-name']);
+      }
+      
+      await loadProductDetail();
+      hideLoadingSpinner();
+    });
+    
+    async function loadProductDetail() {
+      console.log('Loading product details...');
+      
+      const urlParams = new URLSearchParams(window.location.search);
+      const productId = urlParams.get('productId');
+      
+      console.log('Product ID from URL:', productId);
+      
+      if (!productId) {
+        showError("No product specified");
+        return;
+      }
+      
+      try {
+        // Show image loading state
+        document.getElementById('product-image-loading').style.display = 'block';
+        document.getElementById('product-detail-image').style.display = 'none';
+        document.getElementById('product-image-placeholder').style.display = 'none';
+        
+        const products = await window.dataManager.getProductsFromFirestore();
+        const categories = await window.dataManager.getCategoriesFromFirestore();
+        
+        console.log('Total products loaded:', products.length);
+        console.log('Total categories loaded:', categories.length);
+        
+        currentProduct = products.find(p => p.id === productId);
+        
+        console.log('Found product:', currentProduct);
+        
+        if (!currentProduct) {
+          showError("Product not found");
+          return;
+        }
+        
+        currentCategory = categories.find(c => c.id === currentProduct.categoryId);
+        console.log('Found category:', currentCategory);
+        
+        // Update page content
+        document.getElementById('product-title').textContent = currentProduct.name;
+        document.getElementById('product-detail-name').textContent = currentProduct.name;
+        document.getElementById('product-detail-description').textContent = currentProduct.description || 'No description available.';
+        
+        // Update price
+        if (currentProduct.price && currentProduct.price !== 'Contact for price') {
+          document.getElementById('product-detail-price').textContent = currentProduct.price;
+        }
+        
+        // Update category info
+        if (currentCategory) {
+          document.getElementById('product-category-name').textContent = currentCategory.name;
+          document.getElementById('breadcrumb-category').textContent = currentCategory.name;
+          document.getElementById('breadcrumb-category').href = `category.html?categoryId=${currentCategory.id}`;
+        }
+        
+        document.getElementById('breadcrumb-product').textContent = currentProduct.name;
+        
+        // Update image - This is the critical part
+        const productImage = document.getElementById('product-detail-image');
+        if (currentProduct.image) {
+          console.log('Setting product image to:', currentProduct.image);
+          productImage.src = currentProduct.image;
+          productImage.alt = currentProduct.name;
+          
+          // Force image load
+          productImage.onload = function() {
+            console.log('Product image loaded successfully');
+            handleProductImageLoad(this);
+          };
+          
+          productImage.onerror = function() {
+            console.error('Product image failed to load');
+            handleProductImageError(this);
+          };
+          
+        } else {
+          console.log('No product image available');
+          handleProductImageError(productImage);
+        }
+        
+        // Update specifications
+        const specsContainer = document.getElementById('product-detail-specs');
+        if (currentProduct.specs) {
+          // Convert newlines to HTML line breaks
+          specsContainer.innerHTML = currentProduct.specs.replace(/\n/g, '<br>');
+        } else {
+          specsContainer.innerHTML = '<p>No specifications available for this product.</p>';
+        }
+        
+        // Load related products
+        await loadRelatedProducts();
+        
+      } catch (error) {
+        console.error("Error loading product details:", error);
+        showError("Failed to load product details: " + error.message);
+      }
+    }
+    
+    async function loadRelatedProducts() {
+      if (!currentProduct || !currentCategory) return;
+      
+      try {
+        const products = await window.dataManager.getProductsFromFirestore();
+        const relatedProducts = products.filter(p => 
+          p.categoryId === currentProduct.categoryId && p.id !== currentProduct.id
+        ).slice(0, 4); // Show up to 4 related products
+        
+        const container = document.getElementById('related-products-grid');
+        
+        if (relatedProducts.length > 0) {
+          container.innerHTML = relatedProducts.map(product => `
+            <div class="product-card" onclick="navigateToProductDetail('${product.id}')">
+              <div class="product-image-container">
+                <img src="${product.image || 'https://via.placeholder.com/400x300?text=Product+Image'}" alt="${product.name}" onerror="handleImageError(this)">
+                <div class="image-placeholder" style="display:none;">Image Not Available</div>
+              </div>
+              <h3>${product.name}</h3>
+              <p>${(product.description || '').substring(0, 100)}${product.description && product.description.length > 100 ? '...' : ''}</p>
+              <div class="price">${product.price || 'Contact for price'}</div>
+            </div>
+          `).join('');
+        } else {
+          document.getElementById('related-products-container').style.display = 'none';
+        }
+      } catch (error) {
+        console.error("Error loading related products:", error);
+        document.getElementById('related-products-container').style.display = 'none';
+      }
+    }
+    
+    function contactAboutProduct() {
+      if (!currentProduct) return;
+      
+      const subject = `Inquiry about ${currentProduct.name}`;
+      const body = `Hello, I'm interested in the following product:\n\nProduct: ${currentProduct.name}\nCategory: ${currentCategory ? currentCategory.name : 'N/A'}\n\nPlease provide more information about pricing and availability.`;
+      
+      // Get footer content for contact info
+      const footerContent = window.dataManager ? window.dataManager.getFooterContent() : {};
+      const email = footerContent.email || 'info@example.com';
+      
+      // Open email client or show contact info
+      window.location.href = `mailto:${email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    }
+    
+    function goBackToCategory() {
+      if (currentCategory) {
+        window.location.href = `category.html?categoryId=${currentCategory.id}`;
+      } else {
+        window.location.href = 'products.html';
+      }
+    }
+    
+    function showError(message) {
+      const container = document.querySelector('.product-detail-container');
+      container.innerHTML = `
+        <div class="error-message">
+          <h3>Error</h3>
+          <p>${message}</p>
+          <a href="products.html" class="cta-button">Back to Products</a>
+        </div>
+      `;
+    }
+    
+    function hideLoadingSpinner() {
+      const spinner = document.getElementById('loadingSpinner');
+      if (spinner) spinner.style.display = 'none';
+    }
+    
+    // Set timeout as fallback
+    setTimeout(hideLoadingSpinner, 8000);
+  </script>
+</body>
+</html>
