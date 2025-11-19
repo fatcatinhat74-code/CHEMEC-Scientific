@@ -1,4 +1,3 @@
-
 // ===========================================================
 // 🔧 ADMIN PANEL – ENGLISH + FIRESTORE
 // ===========================================================
@@ -49,6 +48,35 @@ class AdminPanel {
     });
   }
 
+  // =======================================================
+  // Enhanced Edit Functions with Auto-Scroll
+  // =======================================================
+
+  async scrollToFormAndFocus(formId, firstInputId = null) {
+    // Wait a brief moment for the DOM to update
+    await new Promise(resolve => setTimeout(resolve, 100));
+    
+    const form = document.getElementById(formId);
+    if (form) {
+      // Scroll to the form smoothly
+      form.scrollIntoView({ 
+        behavior: 'smooth', 
+        block: 'start'
+      });
+      
+      // Focus on the first input field if specified
+      if (firstInputId) {
+        const firstInput = document.getElementById(firstInputId);
+        if (firstInput) {
+          setTimeout(() => {
+            firstInput.focus();
+            firstInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          }, 300);
+        }
+      }
+    }
+  }
+
   // Auth
   handleLogin(e) {
     e.preventDefault();
@@ -84,14 +112,30 @@ class AdminPanel {
 
   // Tabs
   switchTab(tabName) {
+    // Hide all tab contents and remove active classes
     document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
     document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
+    
+    // Show the selected tab and add active class
     document.getElementById(tabName)?.classList.add('active');
     document.querySelector(`[data-tab="${tabName}"]`)?.classList.add('active');
+    
+    // Load appropriate data for the tab
     if (tabName === 'categories') this.loadCategoriesList();
-    else if (tabName === 'products') { this.loadProductsList(); this.populateCategoryDropdown(); }
+    else if (tabName === 'products') { 
+      this.loadProductsList(); 
+      this.populateCategoryDropdown(); 
+    }
     else if (tabName === 'hero-slideshow') this.loadSlidesList();
     else if (tabName === 'footer-content') this.loadFooterContentForm();
+    
+    // Scroll to top of the tab content smoothly
+    setTimeout(() => {
+      const tabContent = document.getElementById(tabName);
+      if (tabContent) {
+        tabContent.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    }, 100);
   }
 
   // Data loading
@@ -214,14 +258,21 @@ class AdminPanel {
     const slides = await this.dataManager.getSlides();
     const slide = slides.find(s => s.id == id);
     if (!slide) return;
+    
     document.getElementById('slide-image').value = slide.image;
     document.getElementById('slide-title').value = slide.title;
     document.getElementById('slide-subtitle').value = slide.subtitle;
     document.getElementById('slide-active').checked = slide.active;
+    
     const btn = document.querySelector('#add-slide-form button');
     btn.textContent = 'Update slide';
     btn.onclick = (e) => this.handleUpdateSlide(e, id);
-    this.toast('Slide loaded for editing');
+    
+    // Switch to hero-slideshow tab and scroll to form
+    this.switchTab('hero-slideshow');
+    await this.scrollToFormAndFocus('add-slide-form', 'slide-image');
+    
+    this.toast('Slide loaded for editing - scroll to form');
   }
 
   async handleUpdateSlide(e, id) {
@@ -310,14 +361,21 @@ class AdminPanel {
     const cats = this.dataManager.getCategories();
     const cat = cats.find(c => c.id == id);
     if (!cat) return;
+    
     document.getElementById('category-name').value = cat.name;
     document.getElementById('category-description').value = cat.description || '';
     document.getElementById('category-image').value = cat.image || '';
     this.currentEditingId = id;
+    
     const btn = document.querySelector('#add-category-form button');
     btn.textContent = 'Update category';
     btn.onclick = (e) => this.handleUpdateCategory(e, id);
-    this.toast('Category loaded for editing');
+    
+    // Switch to categories tab and scroll to form
+    this.switchTab('categories');
+    await this.scrollToFormAndFocus('add-category-form', 'category-name');
+    
+    this.toast('Category loaded for editing - scroll to form');
   }
 
   async handleUpdateCategory(e, id) {
@@ -438,6 +496,7 @@ class AdminPanel {
     const prods = this.dataManager.getProducts();
     const p = prods.find(pr => pr.id == id);
     if (!p) return;
+    
     document.getElementById('product-category').value = p.categoryId;
     document.getElementById('product-name').value = p.name;
     document.getElementById('product-description').value = p.description || '';
@@ -445,10 +504,16 @@ class AdminPanel {
     document.getElementById('product-price').value = (p.price || '').replace(' EGP','');
     document.getElementById('product-image').value = p.image || '';
     this.currentEditingId = id;
+    
     const btn = document.querySelector('#add-product-form button');
     btn.textContent = 'Update product';
     btn.onclick = (e) => this.handleUpdateProduct(e, id);
-    this.toast('Product loaded for editing');
+    
+    // Switch to products tab and scroll to form
+    this.switchTab('products');
+    await this.scrollToFormAndFocus('add-product-form', 'product-name');
+    
+    this.toast('Product loaded for editing - scroll to form');
   }
 
   async handleUpdateProduct(e, id) {
